@@ -10,7 +10,9 @@ One Click converts a business brief or an authenticated saved One Click project 
 
 ## MCP
 
-Production endpoint: `https://oneclick-chatgpt.woeinvests.workers.dev/mcp`
+Production endpoint: `https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin/mcp`
+
+Fallback endpoint: `https://oneclick-chatgpt.woeinvests.workers.dev/mcp`
 
 Tools:
 

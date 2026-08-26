@@ -6,7 +6,7 @@
     "name": "AYOBAMI JOHN HAASTRUP",
     "url": "https://oneclickwebsitedesignfactory.com"
   },
-  "homepage": "https://oneclick-chatgpt.woeinvests.workers.dev",
+  "homepage": "https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin",
   "repository": "https://github.com/AyobamiH/oneclick-chatgpt-plugin",
   "license": "MIT",
   "logo": "./assets/logo.png",
@@ -20,8 +20,8 @@
     "developerName": "AYOBAMI JOHN HAASTRUP",
     "category": "Developer Tools",
     "website": "https://oneclickwebsitedesignfactory.com",
-    "privacyPolicy": "https://oneclick-chatgpt.woeinvests.workers.dev/privacy",
-    "termsOfService": "https://oneclick-chatgpt.woeinvests.workers.dev/terms",
-    "support": "https://oneclick-chatgpt.woeinvests.workers.dev/support"
+    "privacyPolicy": "https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin/privacy",
+    "termsOfService": "https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin/terms",
+    "support": "https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin/support"
   }
 }

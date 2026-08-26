@@ -37,16 +37,16 @@ async function mcp(request, env, ctx) {
 
 export async function fetchHandler(request, env = {}, ctx = {}) {
   const url = new URL(request.url);
-  if (url.pathname === "/mcp") return mcp(request, env, ctx);
-  if (url.pathname === "/health") return json({ status: "ok", service: SERVER.name, version: VERSION, tools: TOOLS.length, basicMode: "available", fullModeAuth: authConfigured(env) ? "configured" : "not_configured", analytics: env.ONECLICK_ANALYTICS ? "configured" : "not_configured" });
-  if (url.pathname === "/.well-known/oauth-protected-resource" || url.pathname === "/.well-known/oauth-protected-resource/mcp") return json(protectedResource(url.origin, env));
-  if (url.pathname === "/.well-known/openai-apps-challenge") return env.OPENAI_APPS_CHALLENGE ? new Response(env.OPENAI_APPS_CHALLENGE, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } }) : new Response("Not configured", { status: 404 });
-  if (url.pathname === "/privacy") return html(privacy());
-  if (url.pathname === "/terms") return html(terms());
-  if (url.pathname === "/support") return html(support());
-  if (url.pathname === "/" || url.pathname === "/index.html") return html(landing(url.origin));
+  const path = url.pathname.replace(/^\/oneclick-chatgpt-plugin(?=\/|$)/, "") || "/";
+  if (path === "/mcp") return mcp(request, env, ctx);
+  if (path === "/health") return json({ status: "ok", service: SERVER.name, version: VERSION, tools: TOOLS.length, basicMode: "available", fullModeAuth: authConfigured(env) ? "configured" : "not_configured", analytics: env.ONECLICK_ANALYTICS ? "configured" : "not_configured" });
+  if (path === "/.well-known/oauth-protected-resource" || path === "/.well-known/oauth-protected-resource/mcp") return json(protectedResource(url.origin, env));
+  if (path === "/.well-known/openai-apps-challenge") return env.OPENAI_APPS_CHALLENGE ? new Response(env.OPENAI_APPS_CHALLENGE, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } }) : new Response("Not configured", { status: 404 });
+  if (path === "/privacy") return html(privacy());
+  if (path === "/terms") return html(terms());
+  if (path === "/support") return html(support());
+  if (path === "/" || path === "/index.html") return html(landing(url.origin));
   return json({ error: "not_found" }, 404);
 }
 export default { fetch: fetchHandler };
 export { rpc };
-
