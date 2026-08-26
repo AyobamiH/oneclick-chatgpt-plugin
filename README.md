@@ -10,9 +10,9 @@ One Click converts a business brief or an authenticated saved One Click project 
 
 ## MCP
 
-Production endpoint: `https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin/mcp`
+Production endpoint: `https://oneclick-chatgpt.woeinvests.workers.dev/mcp`
 
-Fallback endpoint: `https://oneclick-chatgpt.woeinvests.workers.dev/mcp`
+The Worker also understands the `/oneclick-chatgpt-plugin` path prefix when a branded Cloudflare route is provisioned for the website domain.
 
 Tools:
 

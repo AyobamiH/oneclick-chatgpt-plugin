@@ -1,4 +1,4 @@
-const base = process.env.ONECLICK_PRODUCTION_URL || "https://oneclickwebsitedesignfactory.com/oneclick-chatgpt-plugin";
+const base = process.env.ONECLICK_PRODUCTION_URL || "https://oneclick-chatgpt.woeinvests.workers.dev";
 const probes = {};
 for (const path of ["/", "/health", "/privacy", "/terms", "/support"]) {
   const response = await fetch(`${base}${path}`);
