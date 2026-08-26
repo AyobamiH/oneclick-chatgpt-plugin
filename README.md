@@ -23,6 +23,8 @@ Tools:
 
 Full Mode uses the existing One Click Supabase identity through an OAuth bearer token. Configure `ONECLICK_SUPABASE_URL` and `ONECLICK_SUPABASE_PUBLISHABLE_KEY` as Worker secrets or deployment configuration. Never commit them.
 
+The GitHub deployment workflow needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. Add the optional `ONECLICK_SUPABASE_URL` and `ONECLICK_SUPABASE_PUBLISHABLE_KEY` secrets to enable authenticated Full Mode during deployment. With only the Cloudflare pair, the public Basic Mode endpoint still deploys safely and Full Mode reports that authentication is not configured.
+
 ## Development
 
 ```sh
