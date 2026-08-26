@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Turn a One Click website brief into a structured Lovable build from ChatGPT.",
   "scripts": {
+    "assets": "node scripts/generate-logo.mjs",
     "lint": "node scripts/check-source.mjs",
     "test": "node --test",
     "validate:plugin": "node scripts/validate-plugin.mjs",
@@ -18,4 +19,3 @@
   "engines": { "node": ">=20" },
   "license": "MIT"
 }
-

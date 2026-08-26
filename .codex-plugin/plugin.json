@@ -9,12 +9,12 @@
   "homepage": "https://oneclick-chatgpt.woeinvests.workers.dev",
   "repository": "https://github.com/AyobamiH/oneclick-chatgpt-plugin",
   "license": "MIT",
-  "logo": "./assets/logo.svg",
+  "logo": "./assets/logo.png",
   "skills": "./skills/",
   "interface": {
     "displayName": "One Click",
-    "logo": "./assets/logo.svg",
-    "composerIcon": "./assets/logo.svg",
+    "logo": "./assets/logo.png",
+    "composerIcon": "./assets/logo.png",
     "shortDescription": "Brief once, build with Lovable",
     "longDescription": "One Click converts a business idea into a structured website brief, build plan and knowledge base, then coordinates the installed Lovable plugin to create the project. Basic Mode is anonymous and lightweight. Connected One Click customers can retrieve saved projects and Full Mode production guidance.",
     "developerName": "AYOBAMI JOHN HAASTRUP",
@@ -25,4 +25,3 @@
     "support": "https://oneclick-chatgpt.woeinvests.workers.dev/support"
   }
 }
-
