@@ -1,12 +1,11 @@
 import { TOOLS, callTool } from "./tools.js";
-import { protectedResource, authConfigured } from "./auth.js";
 import { record } from "./analytics.js";
 import { landing, privacy, support, terms } from "./pages.js";
 import { html, json } from "./utils.js";
 import { VERSION } from "./version.js";
 
 const SERVER = { name: "one-click", version: VERSION };
-const INSTRUCTIONS = "Use One Click to structure a website brief, then use the separately installed Lovable plugin to create the project. Basic Mode is anonymous and ephemeral. Full Mode and saved projects require the user's existing One Click authentication. Never ask for tokens in tool arguments. Review the handoff before an external build, upload only user-selected references, write Full Mode project knowledge to Lovable, and distinguish draft generation from deployment.";
+const INSTRUCTIONS = "Use One Click to turn a rough website idea into a structured, anonymous brief, then use the separately installed Lovable plugin to create the project. This initial release is ephemeral and does not read or save One Click accounts. Review the handoff before an external build, upload only user-selected references, and distinguish draft preparation from project creation and deployment.";
 const ok = (id, result) => ({ jsonrpc: "2.0", id, result });
 const error = (id, code, message) => ({ jsonrpc: "2.0", id: id ?? null, error: { code, message } });
 
@@ -39,8 +38,7 @@ export async function fetchHandler(request, env = {}, ctx = {}) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/oneclick-chatgpt-plugin(?=\/|$)/, "") || "/";
   if (path === "/mcp") return mcp(request, env, ctx);
-  if (path === "/health") return json({ status: "ok", service: SERVER.name, version: VERSION, tools: TOOLS.length, basicMode: "available", fullModeAuth: authConfigured(env) ? "configured" : "not_configured", analytics: env.ONECLICK_ANALYTICS ? "configured" : "not_configured" });
-  if (path === "/.well-known/oauth-protected-resource" || path === "/.well-known/oauth-protected-resource/mcp") return json(protectedResource(url.origin, env));
+  if (path === "/health") return json({ status: "ok", service: SERVER.name, version: VERSION, tools: TOOLS.length, mode: "anonymous_basic", analytics: env.ONECLICK_ANALYTICS ? "configured" : "not_configured" });
   if (path === "/.well-known/openai-apps-challenge") return env.OPENAI_APPS_CHALLENGE ? new Response(env.OPENAI_APPS_CHALLENGE, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } }) : new Response("Not configured", { status: 404 });
   if (path === "/privacy") return html(privacy());
   if (path === "/terms") return html(terms());

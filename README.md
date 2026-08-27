@@ -1,12 +1,12 @@
 # One Click for ChatGPT
 
-One Click converts a business brief or an authenticated saved One Click project into a structured handoff for the installed Lovable plugin. This repository is intentionally separate from the existing One Click website.
+One Click converts a rough business idea into a structured handoff for the installed Lovable plugin. This repository is intentionally separate from the existing One Click website.
 
 ## Capability split
 
-- **Basic Mode:** anonymous, ephemeral, lightweight single-page handoff.
-- **Full Mode:** authenticated handoff with production knowledge, SEO, WCAG 2.1 AA guidance, security controls and a five-sprint roadmap.
+- **Initial release:** anonymous, ephemeral, lightweight website handoff.
 - **Lovable:** the separately installed Lovable plugin performs project creation and subsequent code changes. One Click does not imitate Lovable or use the legacy prompt-fragment URL.
+- **Later release:** authenticated saved projects and Full Mode remain in the product roadmap and are not exposed until their OAuth connection can be reviewed end to end.
 
 ## MCP
 
@@ -14,18 +14,11 @@ Production endpoint: `https://oneclick-chatgpt.woeinvests.workers.dev/mcp`
 
 The Worker also understands the `/oneclick-chatgpt-plugin` path prefix when a branded Cloudflare route is provisioned for the website domain.
 
-Tools:
+Tool:
 
 - `oneclick_prepare_basic_draft`
-- `oneclick_prepare_full_handoff`
-- `oneclick_list_projects`
-- `oneclick_get_project`
-- `oneclick_get_knowledge_base`
-- `oneclick_record_lovable_handoff`
 
-Full Mode uses the existing One Click Supabase identity through an OAuth bearer token. Configure `ONECLICK_SUPABASE_URL` and `ONECLICK_SUPABASE_PUBLISHABLE_KEY` as Worker secrets or deployment configuration. Never commit them.
-
-The GitHub deployment workflow needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. Add the optional `ONECLICK_SUPABASE_URL` and `ONECLICK_SUPABASE_PUBLISHABLE_KEY` secrets to enable authenticated Full Mode during deployment. With only the Cloudflare pair, the public Basic Mode endpoint still deploys safely and Full Mode reports that authentication is not configured.
+The GitHub deployment workflow needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. No One Click account or Supabase secret is needed for this release.
 
 ## Development
 

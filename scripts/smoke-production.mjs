@@ -6,5 +6,7 @@ for (const path of ["/", "/health", "/privacy", "/terms", "/support"]) {
 }
 if (probes["/health"].status !== 200) throw new Error(`production probes failed: ${JSON.stringify(probes)}`);
 const response = await fetch(`${base}/mcp`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }) });
-const payload = await response.json(); if (!response.ok || payload?.result?.tools?.length !== 6) throw new Error("MCP tools/list failed");
+const payload = await response.json();
+const tools = payload?.result?.tools;
+if (!response.ok || tools?.length !== 1 || tools[0]?.name !== "oneclick_prepare_basic_draft") throw new Error("MCP tools/list failed");
 console.log(`Production smoke passed: ${base}`);

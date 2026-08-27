@@ -26,24 +26,24 @@ Dialogue: 0,0:00:04.50,0:00:10.00,Title,,0,0,0,,“Build a site for Happy Paws�
 Dialogue: 0,0:00:04.50,0:00:10.00,Body,,0,0,0,,Pet groomer · Northampton · More bookings · Warm and trustworthy
 Dialogue: 0,0:00:04.50,0:00:10.00,Code,,0,0,0,,One Click asks only for missing essentials.
 
-Dialogue: 0,0:00:10.00,0:00:16.50,Eyebrow,,0,0,0,,2 · BASIC MODE
-Dialogue: 0,0:00:10.00,0:00:16.50,Title,,0,0,0,,A useful draft, no account required
-Dialogue: 0,0:00:10.00,0:00:16.50,Body,,0,0,0,,Hero · Business intro · Services · Contact · Responsive layout
-Dialogue: 0,0:00:10.00,0:00:16.50,Code,,0,0,0,,oneclick_prepare_basic_draft  →  anonymous · ephemeral · read-only
+Dialogue: 0,0:00:10.00,0:00:16.50,Eyebrow,,0,0,0,,2 · SOLVE THE PLANNING GAP
+Dialogue: 0,0:00:10.00,0:00:16.50,Title,,0,0,0,,From vague idea to clear direction
+Dialogue: 0,0:00:10.00,0:00:16.50,Body,,0,0,0,,Structure · Content direction · Calls to action · Layout · Brand feel
+Dialogue: 0,0:00:10.00,0:00:16.50,Code,,0,0,0,,One Click prepares the specification before the builder starts.
 
-Dialogue: 0,0:00:16.50,0:00:23.00,Eyebrow,,0,0,0,,3 · FULL MODE
-Dialogue: 0,0:00:16.50,0:00:23.00,Title,,0,0,0,,Keep the business intent intact
-Dialogue: 0,0:00:16.50,0:00:23.00,Body,,0,0,0,,Saved projects · Project knowledge · Local SEO · WCAG 2.1 AA · Security · Five-sprint roadmap
-Dialogue: 0,0:00:16.50,0:00:23.00,Code,,0,0,0,,Existing One Click identity required. Tokens never enter tool arguments.
+Dialogue: 0,0:00:16.50,0:00:23.00,Eyebrow,,0,0,0,,3 · ANONYMOUS BY DESIGN
+Dialogue: 0,0:00:16.50,0:00:23.00,Title,,0,0,0,,A useful brief, no account required
+Dialogue: 0,0:00:16.50,0:00:23.00,Body,,0,0,0,,The MCP does not save the brief, access accounts or claim a project was created.
+Dialogue: 0,0:00:16.50,0:00:23.00,Code,,0,0,0,,oneclick_prepare_basic_draft  →  ephemeral · read-only
 
 Dialogue: 0,0:00:23.00,0:00:30.00,Eyebrow,,0,0,0,,4 · NATIVE LOVABLE HANDOFF
 Dialogue: 0,0:00:23.00,0:00:30.00,Title,,0,0,0,,One Click plans. Lovable builds.
-Dialogue: 0,0:00:23.00,0:00:30.00,Body,,0,0,0,,The structured brief becomes Lovable’s initial message. Full Mode also supplies project knowledge.
-Dialogue: 0,0:00:23.00,0:00:30.00,Code,,0,0,0,,User approval comes before project creation or recording the handoff.
+Dialogue: 0,0:00:23.00,0:00:30.00,Body,,0,0,0,,The reviewed brief becomes Lovable’s initial project message inside ChatGPT.
+Dialogue: 0,0:00:23.00,0:00:30.00,Code,,0,0,0,,The user approves before external project creation.
 
 Dialogue: 0,0:00:30.00,0:00:35.00,Eyebrow,,0,0,0,,5 · CLEAR STATE
-Dialogue: 0,0:00:30.00,0:00:35.00,Title,,0,0,0,,Draft ≠ generated project ≠ deployed site
-Dialogue: 0,0:00:30.00,0:00:35.00,Body,,0,0,0,,One Click preserves that distinction so users always know what actually happened.
+Dialogue: 0,0:00:30.00,0:00:35.00,Title,,0,0,0,,Brief ≠ generated project ≠ deployed site
+Dialogue: 0,0:00:30.00,0:00:35.00,Body,,0,0,0,,One Click preserves that distinction so users know what actually happened.
 
 Dialogue: 0,0:00:35.00,0:00:39.00,Eyebrow,,0,0,0,,ONE BRIEF. ONE CLICK. A REAL BUILD.
 Dialogue: 0,0:00:35.00,0:00:39.00,Title,,0,0,0,,Plan once. Build with Lovable.
