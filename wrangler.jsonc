@@ -7,7 +7,8 @@
   "workers_dev": true,
   "observability": { "enabled": true },
   "vars": {
-    "ONECLICK_SITE_URL": "https://oneclickwebsitedesignfactory.com"
+    "ONECLICK_SITE_URL": "https://oneclickwebsitedesignfactory.com",
+    "OPENAI_APPS_CHALLENGE": "bJOv4gQj_Xtt3yRg5qxnyPnyL3GNmIWTpJV5qNIq7hg"
   },
   "analytics_engine_datasets": [
     { "binding": "ONECLICK_ANALYTICS", "dataset": "oneclick_usage" }

@@ -1,0 +1,50 @@
+[Script Info]
+Title: One Click ChatGPT Plugin Demo
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Eyebrow,DejaVu Sans,22,&H00A5F3FC,&H00A5F3FC,&H0007111E,&H0007111E,-1,0,0,0,100,100,1,0,1,0,0,7,64,64,192,1
+Style: Title,DejaVu Sans,48,&H00FFFFFF,&H00FFFFFF,&H0007111E,&H0007111E,-1,0,0,0,100,100,0,0,1,0,0,7,64,64,232,1
+Style: Body,DejaVu Sans,28,&H00DDEAF7,&H00DDEAF7,&H0007111E,&H0007111E,0,0,0,0,100,100,0,0,1,0,0,7,64,64,330,1
+Style: Code,DejaVu Sans Mono,22,&H00C4B5FD,&H00C4B5FD,&H0007111E,&H0007111E,0,0,0,0,100,100,0,0,1,0,0,7,64,64,470,1
+Style: Footer,DejaVu Sans,19,&H0088A7C3,&H0088A7C3,&H0007111E,&H0007111E,0,0,0,0,100,100,0,0,1,0,0,1,64,64,42,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:04.50,Eyebrow,,0,0,0,,ONE CLICK FOR CHATGPT
+Dialogue: 0,0:00:00.00,0:00:04.50,Title,,0,0,0,,Got a website idea?
+Dialogue: 0,0:00:00.00,0:00:04.50,Body,,0,0,0,,Turn the rough idea into a build-ready plan before Lovable starts.
+Dialogue: 0,0:00:00.00,0:00:39.00,Footer,,0,0,0,,Live MCP: oneclick-chatgpt.woeinvests.workers.dev/mcp
+
+Dialogue: 0,0:00:04.50,0:00:10.00,Eyebrow,,0,0,0,,1 · START WITH THE BUSINESS
+Dialogue: 0,0:00:04.50,0:00:10.00,Title,,0,0,0,,“Build a site for Happy Paws”
+Dialogue: 0,0:00:04.50,0:00:10.00,Body,,0,0,0,,Pet groomer · Northampton · More bookings · Warm and trustworthy
+Dialogue: 0,0:00:04.50,0:00:10.00,Code,,0,0,0,,One Click asks only for missing essentials.
+
+Dialogue: 0,0:00:10.00,0:00:16.50,Eyebrow,,0,0,0,,2 · BASIC MODE
+Dialogue: 0,0:00:10.00,0:00:16.50,Title,,0,0,0,,A useful draft, no account required
+Dialogue: 0,0:00:10.00,0:00:16.50,Body,,0,0,0,,Hero · Business intro · Services · Contact · Responsive layout
+Dialogue: 0,0:00:10.00,0:00:16.50,Code,,0,0,0,,oneclick_prepare_basic_draft  →  anonymous · ephemeral · read-only
+
+Dialogue: 0,0:00:16.50,0:00:23.00,Eyebrow,,0,0,0,,3 · FULL MODE
+Dialogue: 0,0:00:16.50,0:00:23.00,Title,,0,0,0,,Keep the business intent intact
+Dialogue: 0,0:00:16.50,0:00:23.00,Body,,0,0,0,,Saved projects · Project knowledge · Local SEO · WCAG 2.1 AA · Security · Five-sprint roadmap
+Dialogue: 0,0:00:16.50,0:00:23.00,Code,,0,0,0,,Existing One Click identity required. Tokens never enter tool arguments.
+
+Dialogue: 0,0:00:23.00,0:00:30.00,Eyebrow,,0,0,0,,4 · NATIVE LOVABLE HANDOFF
+Dialogue: 0,0:00:23.00,0:00:30.00,Title,,0,0,0,,One Click plans. Lovable builds.
+Dialogue: 0,0:00:23.00,0:00:30.00,Body,,0,0,0,,The structured brief becomes Lovable’s initial message. Full Mode also supplies project knowledge.
+Dialogue: 0,0:00:23.00,0:00:30.00,Code,,0,0,0,,User approval comes before project creation or recording the handoff.
+
+Dialogue: 0,0:00:30.00,0:00:35.00,Eyebrow,,0,0,0,,5 · CLEAR STATE
+Dialogue: 0,0:00:30.00,0:00:35.00,Title,,0,0,0,,Draft ≠ generated project ≠ deployed site
+Dialogue: 0,0:00:30.00,0:00:35.00,Body,,0,0,0,,One Click preserves that distinction so users always know what actually happened.
+
+Dialogue: 0,0:00:35.00,0:00:39.00,Eyebrow,,0,0,0,,ONE BRIEF. ONE CLICK. A REAL BUILD.
+Dialogue: 0,0:00:35.00,0:00:39.00,Title,,0,0,0,,Plan once. Build with Lovable.
+Dialogue: 0,0:00:35.00,0:00:39.00,Body,,0,0,0,,Repository: github.com/AyobamiH/oneclick-chatgpt-plugin
