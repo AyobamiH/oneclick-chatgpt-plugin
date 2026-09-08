@@ -1,9 +1,36 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { prepareBasic, prepareFull } from "../src/draft.js";
+import { normaliseBrief, prepareBasic } from "../src/draft.js";
 
-const brief = { business_name: "Northampton Paws", industry: "Pet grooming", location: "Northampton", primary_goal: "Book appointments", brand_vibe: "Friendly and trustworthy", services: ["Dog grooming"], layout: "local-service" };
-test("Basic Mode is lightweight and ephemeral", () => { const result = prepareBasic(brief); assert.equal(result.tier, "basic"); assert.equal(result.lovable.project_knowledge, null); assert.equal(result.stateChanged, false); assert.match(result.lovable.initial_message, /lightweight/i); });
-test("Full Mode contains production knowledge", () => { const result = prepareFull(brief); assert.equal(result.tier, "full"); assert.match(result.lovable.project_knowledge, /WCAG 2\.1 AA/); assert.match(result.lovable.project_knowledge, /Five-sprint roadmap/); assert.ok(result.lovable.project_knowledge.length <= 10000); });
-test("Required fields are enforced", () => assert.throws(() => prepareBasic({}), /missing_required_fields/));
+test("Basic Mode is lightweight and does not claim external creation", () => {
+  const result = prepareBasic({ industry: "Pet grooming", primary_goal: "Book appointments" });
+  assert.equal(result.tier, "basic");
+  assert.equal(result.projectCreated, false);
+  assert.equal(result.deployed, false);
+  assert.equal(result.lovable.project_knowledge, null);
+  assert.match(result.lovable.initial_message, /Pet grooming/);
+  assert.match(result.lovable.initial_message, /Book appointments/);
+});
 
+test("Retained optional fields affect the generated handoff", () => {
+  const result = prepareBasic({
+    industry: "Pet grooming",
+    primary_goal: "Book appointments",
+    business_name: "Northampton Paws",
+    brand_vibe: "Friendly",
+    headline: "Gentle grooming",
+    call_to_action: "Book now",
+    layout: "local-service",
+    services: ["Dog grooming", "Nail trims"]
+  });
+  for (const expected of ["Northampton Paws", "Friendly", "Gentle grooming", "Book now", "local-service", "Dog grooming", "Nail trims"]) {
+    assert.match(result.lovable.initial_message, new RegExp(expected));
+  }
+});
+
+test("No location or broad notes are introduced by normalisation", () => {
+  const brief = normaliseBrief({ industry: "Pet care", primary_goal: "Get enquiries" });
+  assert.equal("location" in brief, false);
+  assert.equal("notes" in brief, false);
+  assert.equal("referenceImages" in brief, false);
+});
