@@ -1,16 +1,18 @@
 ---
 name: build-with-one-click
-description: Use this when a user wants to turn a business idea, One Click draft or saved One Click project into a website in Lovable. Collect the brief once, prepare it with One Click, obtain confirmation before creating the external Lovable project, then use the installed Lovable plugin rather than a prompt URL.
+description: Use this when a user wants to turn a website idea into a bounded, reviewable website brief before optionally creating a project in Lovable.
 ---
 
 # Build with One Click
 
-Use One Click as the planning and quality layer. Use the installed Lovable plugin as the website-building layer.
+Use One Click as the planning layer. This release prepares a website brief only; it does not read or save a One Click account and it does not itself create or deploy a website.
 
-1. Collect only missing essentials: business name, industry, location, primary goal and brand vibe. Headline, CTA, layout, services, audience, colours, style preset, notes and reference images are optional.
-2. Call `oneclick_prepare_basic_draft` to turn the rough idea into an anonymous, structured build brief.
-3. Show a compact summary of the proposed build. Creating a Lovable project is an external write, so obtain the user's confirmation immediately before that call unless their current request explicitly asks for creation.
-4. Call the installed Lovable plugin's `create_project` using `lovable.initial_message`. If reference images were supplied, use Lovable's upload flow and attach only the files the user selected.
-5. Render the Lovable project widget and report the project link. Do not claim it is deployed unless Lovable confirms deployment.
+1. Extract only the minimum requirements needed for the current website task. `industry` and `primary_goal` are required. `business_name`, `brand_vibe`, `headline`, `call_to_action`, `layout` and `services` are optional.
+2. Do not send full conversation history, unrelated prior messages, credentials, private customer records, inferred location data or generic catch-all notes to One Click. If a detail is not needed to prepare the requested website brief, omit it.
+3. Call `oneclick_prepare_basic_draft` with only those task-specific fields.
+4. Show a compact summary of the prepared handoff. Preparing the handoff is not project creation.
+5. If the user explicitly asks to create the external project, use the separately installed Lovable plugin with the reviewed `lovable.initial_message`. Obtain confirmation immediately before that separate external write unless the user's current request already explicitly authorises creation.
+6. If the user supplies reference files, keep them out of the One Click tool call. Pass only user-selected files through Lovable's own upload flow when project creation is authorised.
+7. Report a project as created only when Lovable confirms creation, and report it as deployed only when deployment is separately confirmed.
 
-This initial release does not read or save One Click accounts. Never ask the user to connect an account or supply credentials. Never use the legacy `lovable.dev#prompt=` URL when the native Lovable plugin is available. Preserve the distinction between a draft, a generated project and a deployed website.
+A minimal operational tool-call event may be recorded for reliability analytics. The event must not contain the business brief, prompt text, business name, project data or stable user identifiers.

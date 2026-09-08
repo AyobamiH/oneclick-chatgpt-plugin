@@ -1,7 +1,7 @@
 {
   "name": "one-click",
-  "version": "1.0.0",
-  "description": "Turn a business brief into a structured, reviewable Lovable website build from ChatGPT.",
+  "version": "1.0.1",
+  "description": "Turn bounded website requirements into a structured, reviewable Lovable website brief from ChatGPT.",
   "author": {
     "name": "AYOBAMI JOHN HAASTRUP",
     "url": "https://oneclickwebsitedesignfactory.com"
@@ -15,8 +15,8 @@
     "displayName": "One Click",
     "logo": "./assets/logo.png",
     "composerIcon": "./assets/logo.png",
-    "shortDescription": "Brief once, build with Lovable",
-    "longDescription": "One Click turns a rough business idea into an anonymous, structured website brief, then coordinates the installed Lovable plugin to create the project. It solves the planning and specification work before the build starts and does not read or save One Click accounts in this release.",
+    "shortDescription": "Prepare a bounded website brief",
+    "longDescription": "One Click turns the minimum website requirements for the current task into a structured, reviewable website brief. The current release does not read or save a One Click account, persist the business brief, create a project or deploy a website. A separate Lovable action is used only after the user authorises external project creation.",
     "developerName": "AYOBAMI JOHN HAASTRUP",
     "category": "Productivity",
     "website": "https://oneclickwebsitedesignfactory.com",

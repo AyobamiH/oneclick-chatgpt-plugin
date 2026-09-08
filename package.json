@@ -1,9 +1,9 @@
 {
   "name": "oneclick-chatgpt-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
-  "description": "Turn a One Click website brief into a structured Lovable build from ChatGPT.",
+  "description": "Turn bounded website requirements into a structured Lovable handoff from ChatGPT.",
   "scripts": {
     "assets": "node scripts/generate-logo.mjs",
     "lint": "node scripts/check-source.mjs",
