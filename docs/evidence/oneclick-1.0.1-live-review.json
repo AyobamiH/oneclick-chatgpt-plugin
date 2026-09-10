@@ -1,0 +1,222 @@
+{
+  "source_commit": "dc280d16a1cbc9f11339ab390c6335af91fe4a8f",
+  "kind": "live MCP protocol evidence, not a ChatGPT UI recording",
+  "records": [
+    {
+      "title": "Live service version",
+      "timestamp": "2026-09-10T13:32:51.884Z",
+      "endpoint": "https://oneclick-chatgpt.woeinvests.workers.dev/health",
+      "request": {
+        "method": "GET"
+      },
+      "status": 200,
+      "response": {
+        "status": "ok",
+        "service": "one-click",
+        "version": "1.0.1",
+        "tools": 1,
+        "mode": "anonymous_basic",
+        "analytics": "configured"
+      }
+    },
+    {
+      "title": "Live tool catalogue",
+      "timestamp": "2026-09-10T13:32:52.022Z",
+      "endpoint": "https://oneclick-chatgpt.woeinvests.workers.dev/mcp",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "tools/list"
+      },
+      "status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "tools": [
+            {
+              "name": "oneclick_prepare_basic_draft",
+              "title": "Prepare website build brief",
+              "description": "Prepare a bounded website build brief from the supplied website requirements. No One Click account is read and the business brief is not persisted. A minimal operational tool-call event may be written for reliability analytics. This tool does not create, publish or deploy a website.",
+              "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "industry",
+                  "primary_goal"
+                ],
+                "properties": {
+                  "industry": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "description": "Business type or industry needed to shape the website"
+                  },
+                  "primary_goal": {
+                    "type": "string",
+                    "maxLength": 240,
+                    "description": "Primary outcome the website should help achieve"
+                  },
+                  "business_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "description": "Optional business or project name"
+                  },
+                  "brand_vibe": {
+                    "type": "string",
+                    "maxLength": 160,
+                    "description": "Optional brand personality or visual direction"
+                  },
+                  "headline": {
+                    "type": "string",
+                    "maxLength": 180,
+                    "description": "Optional headline direction"
+                  },
+                  "call_to_action": {
+                    "type": "string",
+                    "maxLength": 80,
+                    "description": "Optional primary call to action"
+                  },
+                  "layout": {
+                    "type": "string",
+                    "enum": [
+                      "simple-linear",
+                      "corporate-grid",
+                      "creative-story",
+                      "premium-luxury",
+                      "local-service",
+                      "modern-editorial",
+                      "bento-grid",
+                      "split-screen",
+                      "immersive-fullscreen",
+                      "card-modular",
+                      "timeline-journey"
+                    ],
+                    "description": "Optional supported One Click layout"
+                  },
+                  "services": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "items": {
+                      "type": "string",
+                      "maxLength": 120,
+                      "description": "A service to include in the draft"
+                    },
+                    "description": "Optional services the user explicitly wants represented"
+                  }
+                }
+              },
+              "outputSchema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "annotations": {
+                "readOnlyHint": false,
+                "destructiveHint": false,
+                "openWorldHint": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Prepare a website brief",
+      "timestamp": "2026-09-10T13:32:52.118Z",
+      "endpoint": "https://oneclick-chatgpt.woeinvests.workers.dev/mcp",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "tools/call",
+        "params": {
+          "name": "oneclick_prepare_basic_draft",
+          "arguments": {
+            "industry": "Pet grooming",
+            "primary_goal": "Book appointments",
+            "business_name": "Northampton Paws",
+            "brand_vibe": "Friendly and trustworthy",
+            "services": [
+              "Dog grooming",
+              "Nail trims"
+            ],
+            "layout": "local-service"
+          }
+        }
+      },
+      "status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "structuredContent": {
+            "schema": "oneclick.lovable-handoff",
+            "schemaVersion": "1.0.1",
+            "tier": "basic",
+            "brief": {
+              "businessName": "Northampton Paws",
+              "industry": "Pet grooming",
+              "primaryGoal": "Book appointments",
+              "brandVibe": "Friendly and trustworthy",
+              "headline": "",
+              "cta": "",
+              "layout": "local-service",
+              "services": [
+                "Dog grooming",
+                "Nail trims"
+              ]
+            },
+            "lovable": {
+              "initial_message": "Build a simple, responsive, single-page website draft for “Northampton Paws”.\nBusiness type: Pet grooming\nPrimary goal: Book appointments\nBrand feel: Friendly and trustworthy\nLayout: local-service\nServices to represent: Dog grooming, Nail trims\nInclude a clean hero, short business introduction, services section and contact section. Keep the draft lightweight and editable. Do not invent testimonials, certifications, prices, addresses, contact details or other business facts that were not supplied. Use clearly labelled placeholders when a fact is missing.",
+              "project_knowledge": null,
+              "recommended_follow_up": "Review the brief, then explicitly authorise any external project creation."
+            },
+            "projectCreated": false,
+            "deployed": false
+          },
+          "content": [
+            {
+              "type": "text",
+              "text": "One Click prepared a Basic Mode handoff. Review it before authorising any external project creation."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "title": "Reject unrelated input",
+      "timestamp": "2026-09-10T13:32:52.257Z",
+      "endpoint": "https://oneclick-chatgpt.woeinvests.workers.dev/mcp",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "tools/call",
+        "params": {
+          "name": "oneclick_prepare_basic_draft",
+          "arguments": {
+            "industry": "Pet grooming",
+            "primary_goal": "Book appointments",
+            "conversation_history": "SYNTHETIC_TEST_VALUE"
+          }
+        }
+      },
+      "status": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "isError": true,
+          "content": [
+            {
+              "type": "text",
+              "text": "One Click could not prepare the handoff: invalid_input:unexpected_field:conversation_history"
+            }
+          ],
+          "structuredContent": {
+            "status": "blocked",
+            "projectCreated": false,
+            "deployed": false
+          }
+        }
+      }
+    }
+  ]
+}
