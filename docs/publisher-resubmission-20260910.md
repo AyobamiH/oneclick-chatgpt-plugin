@@ -1,4 +1,4 @@
-# One Click 1.0.1 publisher preparation — 10 September 2026
+# One Click 1.0.1 submitted for review — 10 September 2026
 
 ## Verified implementation
 
@@ -33,12 +33,20 @@ The actual response reported `schemaVersion: 1.0.1`, `tier: basic`, `projectCrea
 
 `assets/oneclick-1.0.1-chatgpt-demo.mp4` is a 32-second sequence of actual ChatGPT Developer Mode screen captures. It presents the request, permission details, completed answer and actual tool response; pauses are condensed and labelled. The account sidebar is excluded. `evidence/oneclick-1.0.1-chatgpt-transcript.txt` preserves the visible synthetic interaction.
 
-## Submission checkpoint
+## Confirmed submission receipt
 
-Not submitted at this checkpoint. Do not interpret a saved draft, passing skill scan or deployed Worker as submission or approval.
+Submitted One Click version **1.0.1** for review on 10 September 2026. The publisher displayed **One Click submitted for review**, followed by the dashboard row **1.0.1 — Review**. This confirms submission, not approval or publication.
+
+- Dashboard: https://platform.openai.com/plugins
+- Publisher app: `asdk_app_698c5319a3c8819180537c0c37cde979`
+- Publisher version: `asdk_app_v_698c531aa1a481918c7e92123d7afbf8`
+- Submitted demo: https://raw.githubusercontent.com/AyobamiH/oneclick-chatgpt-plugin/34eb3d99c4b1e6931e16f74fbc2c9c4623d9af5e/assets/oneclick-1.0.1-chatgpt-demo.mp4
+- Receipt image: `evidence/oneclick-1.0.1-submission-receipt.jpg`
+- Latest asset commit CI: https://github.com/AyobamiH/oneclick-chatgpt-plugin/actions/runs/34485404869 — success.
+- Latest deployment: https://github.com/AyobamiH/oneclick-chatgpt-plugin/actions/runs/34485404813 — success.
 
 The earlier automatic approval block for creating the private connection was resolved by the user's explicit approval. The real ChatGPT demonstration is complete.
 
-The user has explicitly confirmed submission with the displayed legal and compliance declarations. No additional confirmation is needed for this same submission.
+The user explicitly confirmed submission with the displayed legal and compliance declarations; those declarations were submitted with this version.
 
-Next: attach the real ChatGPT demonstration, submit the saved draft, verify Review status, and replace this checkpoint with the observed receipt. Do not infer submission from asset publication.
+Next external gate: OpenAI's review decision. Do not resubmit this version again merely because repository code or deployment is inspected. Read the current dashboard decision before taking the next distribution action. No monitoring automation was created in this session.
