@@ -23,12 +23,22 @@ Prepared the 1.0.1 draft with:
 - three negative invocation scenarios retained (generic coding help, purchases, existing-project modification);
 - updated release notes.
 
-## Remaining gates
+## Authorised ChatGPT demonstration
+
+The user explicitly approved the private demo connection, synthetic-data recording, and final submission with the displayed terms and declarations on 10 September 2026.
+
+Created and connected `One Click Review 1.0.1` to the existing unauthenticated production endpoint. In a real ChatGPT conversation, a fictional Northampton Paws request triggered `oneclick_prepare_basic_draft`. The visible permission details contained only the six supplied website fields. The single tool call was allowed once; broad persistent tool permissions were not enabled.
+
+The actual response reported `schemaVersion: 1.0.1`, `tier: basic`, `projectCreated: false`, and `deployed: false`. The returned handoff included the synthetic business, services, goal, brand and layout. No Lovable creation or deployment was performed.
+
+`assets/oneclick-1.0.1-chatgpt-demo.mp4` is a 32-second sequence of actual ChatGPT Developer Mode screen captures. It presents the request, permission details, completed answer and actual tool response; pauses are condensed and labelled. The account sidebar is excluded. `evidence/oneclick-1.0.1-chatgpt-transcript.txt` preserves the visible synthetic interaction.
+
+## Submission checkpoint
 
 Not submitted at this checkpoint. Do not interpret a saved draft, passing skill scan or deployed Worker as submission or approval.
 
-Automatic approval review rejected creating a private ChatGPT connection named `One Click Review 1.0.1` to the existing unauthenticated MCP endpoint because the resubmission instruction did not explicitly authorise creating an additional persistent app. Do not retry that action without specific user approval. A real Developer Mode demonstration remains pending that connection.
+The earlier automatic approval block for creating the private connection was resolved by the user's explicit approval. The real ChatGPT demonstration is complete.
 
-The final publisher form also contains legal and compliance declarations. Request specific confirmation for submitting those declarations with the final review submission, under the Browser skill's action-time legal-agreement rule.
+The user has explicitly confirmed submission with the displayed legal and compliance declarations. No additional confirmation is needed for this same submission.
 
-After approval: create the private demo connection, record a real preparation-only interaction using synthetic data, replace the draft demo URL with the verified recording, review the saved draft, submit for review, and verify the resulting Review status. Update this record with the actual submission receipt.
+Next: attach the real ChatGPT demonstration, submit the saved draft, verify Review status, and replace this checkpoint with the observed receipt. Do not infer submission from asset publication.
