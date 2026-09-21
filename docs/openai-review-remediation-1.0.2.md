@@ -62,7 +62,7 @@ npm run smoke:production
 
 A successful run produces an artifact named `oneclick-review-evidence-<commit>` with:
 
-- `oneclick-privacy-settings.json`: safe fields from the live Cloudflare settings response and the verified disabled logging/export controls. It contains no credentials or raw binding/settings dump.
+- `oneclick-privacy-settings.json`: effective disabled logging/export checks, the fixed API source and any observed inactive logging preferences. Cloudflare may retain true persistence/invocation preferences while collection is disabled, so the receipt distinguishes those preferences from active collection. It contains no credentials or raw binding/settings dump.
 - `oneclick-live-review.json`: observed service version, public-page hashes and HTTP/MCP checks. It is protocol evidence, not a ChatGPT UI recording or OpenAI approval.
 
 The runtime tests cover sensitive markers in unknown tool names and fields, arbitrary exceptions, analytics failures, DNT/GPC suppression, fixed labels/numeric bounds and the unchanged handoff. Live smoke verifies the full privacy/support pages and their contact, release identity, exact tool schema/annotations, successful synthetic preparation, opt-out compatibility and sanitised failure paths.

@@ -9,9 +9,11 @@ Required existing GitHub Actions secrets:
 
 The deployment uses pinned Wrangler 4.33.1, matching `npm run deploy:dry`. Basic Mode is anonymous and does not require One Click account or Supabase secrets. Do not copy credentials from the separate One Click website.
 
-The Analytics Engine binding remains enabled for narrowly scoped, three-month operational events. Stored Worker logs, invocation logs and Logpush are explicitly disabled. The live-settings verifier also rejects enabled traces or export/tail destinations. A missing read permission or an unverified setting fails the deployment check; it does not produce a success claim.
+The Analytics Engine binding remains enabled for narrowly scoped, three-month operational events. Stored Worker log collection, tracing and Logpush are disabled. The live-settings verifier also rejects enabled collection or export/tail destinations. A missing read permission or an unverified setting fails the deployment check; it does not produce a success claim.
 
-The verifier first reads the Worker's `/script-settings` endpoint. If that successful response omits observability, it reads `/settings` and validates only the privacy-related fields, including agreement with the first response. It never prints or saves the broader response or its bindings. Missing or unsafe settings still fail verification; the fallback does not treat missing evidence as disabled logging.
+The verifier first reads the Worker's `/script-settings` endpoint. If that successful response omits observability or returns it as null, it reads the [Get Worker metadata endpoint](https://developers.cloudflare.com/api/resources/workers/subresources/beta/subresources/workers/methods/get/) and validates only privacy-related fields, including agreement on Logpush and tail consumers. It never prints or saves the broader response or its other fields. The fallback requires explicit disabled collection settings; it does not treat missing evidence as disabled logging.
+
+Cloudflare can retain `invocation_logs` and `persist` preferences as true while the corresponding log or trace collection is disabled. These dormant preferences do not enable collection. The evidence therefore distinguishes effective disabled collection/persistence from the observed inactive preferences; it does not claim that every nested preference was read back as false. Re-enabling logs or traces would require a new policy and configuration review.
 
 ## Verification
 

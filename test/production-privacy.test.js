@@ -11,7 +11,21 @@ const env = { CF_API_TOKEN: SECRET, CF_ACCOUNT_ID: ACCOUNT };
 const now = () => new Date("2026-09-21T23:00:00Z");
 function safePayload() {
   return { success: true, errors: [], messages: [], result: {
+    name: "oneclick-chatgpt",
     observability: { enabled: false, logs: { enabled: false, invocation_logs: false }, traces: { enabled: false, persist: false, destinations: [] }, issues: { enabled: false } },
+    logpush: false, tail_consumers: []
+  } };
+}
+// Regression for the live Get Worker API response: collection is explicitly off,
+// while its retained invocation-log and persistence preferences remain true.
+function disabledWorkerPayload() {
+  return { success: true, errors: [], messages: [], result: {
+    name: "oneclick-chatgpt",
+    observability: {
+      enabled: false,
+      logs: { enabled: false, invocation_logs: true, persist: true, destinations: [] },
+      traces: { enabled: false, persist: true, destinations: [] }
+    },
     logpush: false, tail_consumers: []
   } };
 }
@@ -32,24 +46,28 @@ test("Live verification uses a single fixed read-only endpoint and returns only 
   } });
   assert.equal(calls, 1);
   assert.equal(result.status, "verified");
+  assert.equal(result.schema_version, 2);
   assert.equal(result.settings_source, "script_settings");
   assert.equal(result.observed_at, "2026-09-21T23:00:00.000Z");
   assert.equal(Object.values(result.checks).every((value) => typeof value === "boolean"), true);
   assert.equal(JSON.stringify(result).includes(SECRET), false);
   assert.equal(JSON.stringify(result).includes(ACCOUNT), false);
   assert.equal("bindings" in result, false);
+  assert.deepEqual(result.inactive_preferences, { logs_invocation_logs: false, logs_persist: null, traces_persist: false });
 });
 
-test("Only missing or null narrow observability triggers the fixed broader settings read", async (t) => {
+test("Missing or null narrow observability uses explicit disabled Worker metadata with dormant preferences", async (t) => {
   const logs = ["log", "info", "warn", "error", "debug"].map((method) => t.mock.method(console, method, () => {}));
   for (const omission of ["missing", "null"]) {
     const narrow = safePayload();
     if (omission === "missing") delete narrow.result.observability;
     else narrow.result.observability = null;
-    const broad = safePayload();
+    narrow.result.tail_consumers = null;
+    const broad = disabledWorkerPayload();
     broad.result.bindings = [{ name: SECRET, text: SECRET }];
     broad.result.tags = [SECRET];
-    broad.result.compatibility_date = SECRET;
+    broad.result.references = { workers: [{ id: SECRET, name: SECRET }] };
+    broad.result.previews_base_config = { env: { [SECRET]: { type: SECRET, text: SECRET } } };
     const calls = [];
     const result = await verifyProductionPrivacy({ env, now, fetchImpl: async (url, options) => {
       calls.push({ url, options });
@@ -58,7 +76,7 @@ test("Only missing or null narrow observability triggers the fixed broader setti
     assert.equal(calls.length, 2);
     assert.deepEqual(calls.map((call) => call.url), [
       `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/oneclick-chatgpt/script-settings`,
-      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/oneclick-chatgpt/settings`
+      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/workers/oneclick-chatgpt`
     ]);
     for (const { options } of calls) {
       assert.equal(options.method, "GET");
@@ -68,10 +86,21 @@ test("Only missing or null narrow observability triggers the fixed broader setti
       assert.equal(options.signal instanceof AbortSignal, true);
     }
     assert.equal(result.status, "verified");
-    assert.equal(result.settings_source, "script_settings_and_settings");
+    assert.equal(result.schema_version, 2);
+    assert.equal(result.settings_source, "script_settings_and_worker_metadata");
+    assert.equal(result.checks.observability_disabled, true);
+    assert.equal(result.checks.stored_logs_disabled, true);
+    assert.equal(result.checks.invocation_log_collection_disabled, true);
+    assert.equal(result.checks.tracing_disabled, true);
+    assert.equal(result.checks.log_persistence_inactive, true);
+    assert.equal(result.checks.trace_persistence_inactive, true);
+    assert.equal("invocation_logs_disabled" in result.checks, false);
+    assert.equal("no_persistence_overrides" in result.checks, false);
+    assert.deepEqual(result.inactive_preferences, { logs_invocation_logs: true, logs_persist: true, traces_persist: true });
     assert.equal(JSON.stringify(result).includes(SECRET), false);
     assert.equal(JSON.stringify(result).includes(ACCOUNT), false);
     assert.equal("bindings" in result, false);
+    assert.deepEqual(Object.keys(result).sort(), ["check", "checks", "inactive_preferences", "observed_at", "schema_version", "settings_source", "status", "worker"]);
   }
   for (const log of logs) assert.equal(log.mock.callCount(), 0);
 });
@@ -104,14 +133,26 @@ test("Fallback must independently prove disabled observability and agree on safe
     (p) => { p.result.observability = []; },
     (p) => { p.result.observability = {}; },
     (p) => { p.result.observability.enabled = true; },
-    (p) => { p.result.observability.logs.persist = true; },
+    (p) => { delete p.result.observability.logs; },
+    (p) => { p.result.observability.logs = null; },
+    (p) => { p.result.observability.logs = {}; },
+    (p) => { p.result.observability.logs.enabled = true; },
+    (p) => { p.result.observability.logs.invocation_logs = "true"; },
+    (p) => { p.result.observability.logs.persist = "true"; },
+    (p) => { p.result.observability.logs.destinations = [SECRET]; },
+    (p) => { delete p.result.observability.traces; },
+    (p) => { p.result.observability.traces = null; },
     (p) => { p.result.observability.traces.enabled = true; },
+    (p) => { p.result.observability.traces.persist = null; },
     (p) => { p.result.observability.traces.destinations = [SECRET]; },
     (p) => { p.result.observability.issues.enabled = true; },
     (p) => { p.result.logpush = true; },
     (p) => { delete p.result.logpush; },
     (p) => { p.result.tail_consumers = [{ service: SECRET }]; },
-    (p) => { delete p.result.tail_consumers; }
+    (p) => { delete p.result.tail_consumers; },
+    (p) => { p.result.tail_consumers = null; },
+    (p) => { p.result.name = SECRET; },
+    (p) => { delete p.result.name; }
   ];
   for (const mutate of mutations) {
     const narrow = safePayload(); delete narrow.result.observability;
@@ -125,7 +166,7 @@ test("Fallback must independently prove disabled observability and agree on safe
   }
 });
 
-test("Failed broader reads stay failed without exporting provider bodies or old success receipts", async () => {
+test("Failed Worker metadata reads stay failed without exporting provider bodies or old success receipts", async () => {
   const narrow = safePayload(); delete narrow.result.observability;
   const failures = [
     async () => { throw new Error(SECRET); },
@@ -162,28 +203,49 @@ test("Explicit disabled parent accepts documented absent or null logs/traces ove
   }
 });
 
-test("Enabled collection, zero-sampled collection, persistence and exporters fail closed", () => {
+test("Enabled collection, zero-sampled collection and exporters fail closed despite dormant preferences", () => {
   const mutations = [
     (p) => { p.result.observability.enabled = true; },
     (p) => { p.result.observability.logs.enabled = true; p.result.observability.logs.head_sampling_rate = 0; },
-    (p) => { p.result.observability.logs.invocation_logs = true; },
-    (p) => { p.result.observability.logs.persist = true; },
     (p) => { p.result.observability.logs.destinations = [SECRET]; },
     (p) => { p.result.observability.traces.enabled = true; },
-    (p) => { p.result.observability.traces.persist = true; },
     (p) => { p.result.observability.traces.destinations = [SECRET]; },
     (p) => { p.result.observability.issues.enabled = true; },
     (p) => { p.result.logpush = true; },
     (p) => { p.result.tail_consumers = [{ service: SECRET }]; }
   ];
   for (const mutate of mutations) {
-    const payload = safePayload(); mutate(payload);
+    const payload = disabledWorkerPayload();
+    payload.result.observability.issues = { enabled: false };
+    mutate(payload);
     assert.throws(() => checkPrivacySettings(payload), (error) => {
       const report = privacyFailureReport(error);
       assert.equal(report.status, "failed");
       assert.equal(JSON.stringify(report).includes(SECRET), false);
       return true;
     });
+  }
+});
+
+test("Inactive preferences are reported as read booleans, or null when absent", async () => {
+  for (const values of [[true, true, true], [false, false, false], [true, false, true], [undefined, undefined, undefined]]) {
+    const payload = safePayload();
+    const [invocation, logPersistence, tracePersistence] = values;
+    for (const [target, key, value] of [
+      [payload.result.observability.logs, "invocation_logs", invocation],
+      [payload.result.observability.logs, "persist", logPersistence],
+      [payload.result.observability.traces, "persist", tracePersistence]
+    ]) {
+      if (value === undefined) delete target[key];
+      else target[key] = value;
+    }
+    const result = await verifyProductionPrivacy({ env, fetchImpl: async () => response(payload) });
+    assert.deepEqual(result.inactive_preferences, {
+      logs_invocation_logs: invocation ?? null, logs_persist: logPersistence ?? null, traces_persist: tracePersistence ?? null
+    });
+    assert.equal(result.checks.invocation_log_collection_disabled, true);
+    assert.equal(result.checks.log_persistence_inactive, true);
+    assert.equal(result.checks.trace_persistence_inactive, true);
   }
 });
 
@@ -194,13 +256,17 @@ test("Missing required evidence, wrong types and unrecognised telemetry settings
     (p) => { p.result.observability.enabled = "false"; },
     (p) => { p.result.observability.logs = []; },
     (p) => { delete p.result.observability.logs.enabled; },
-    (p) => { delete p.result.observability.logs.invocation_logs; },
+    (p) => { p.result.observability.logs.invocation_logs = null; },
+    (p) => { p.result.observability.logs.invocation_logs = "false"; },
     (p) => { p.result.observability.logs.persist = null; },
+    (p) => { p.result.observability.logs.persist = "false"; },
     (p) => { p.result.observability.logs.destinations = null; },
     (p) => { p.result.observability.logs.head_sampling_rate = "0"; },
     (p) => { p.result.observability.logs[SECRET] = false; },
     (p) => { p.result.observability.traces = {}; },
     (p) => { p.result.observability.traces.enabled = 0; },
+    (p) => { p.result.observability.traces.persist = "true"; },
+    (p) => { p.result.observability.traces.persist = null; },
     (p) => { p.result.observability.traces.propagation_policy = SECRET; },
     (p) => { p.result.observability.issues = null; },
     (p) => { p.result.observability[SECRET] = { enabled: true }; },
@@ -256,6 +322,7 @@ test("Safe receipts are saved and a subsequent failure replaces stale success", 
     await assert.rejects(runProductionPrivacyVerification({ env: receiptEnv, fetchImpl: async () => { throw new Error(SECRET); } }));
     const failed = JSON.parse(await readFile(path, "utf8"));
     assert.equal(failed.status, "failed");
+    assert.equal(failed.schema_version, 2);
     assert.equal(JSON.stringify(failed).includes(SECRET), false);
     const blocker = join(dir, "file");
     await writeFile(blocker, "not a directory");
