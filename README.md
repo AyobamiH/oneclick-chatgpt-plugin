@@ -27,7 +27,7 @@ Required inputs are only `industry` and `primary_goal`. Optional inputs are limi
 - `destructiveHint: false` because it does not delete or overwrite customer state.
 - `openWorldHint: false` because it does not browse arbitrary URLs or invoke external services.
 
-Analytics Engine records only tool name, success/error, rounded latency, release version and coarse client family. Application-level analytics deliberately exclude prompt text, business brief content, business names, URLs, project IDs, tokens, IPs, raw headers and stable user identifiers.
+Analytics Engine records fixed tool/outcome labels, bounded latency/status values, release version and coarse client family; Cloudflare adds timestamps and sampling metadata. Events expire after three months. Direct MCP clients can suppress the event with `DNT: 1` or `Sec-GPC: 1`. Stored Worker logs and Logpush are disabled. Application-level analytics deliberately exclude prompt text, business brief content, business names, URLs, project IDs, tokens, IPs, raw headers and stable user identifiers.
 
 ## Development and release
 
@@ -39,3 +39,7 @@ npm run smoke:production
 ```
 
 Production pushes require `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. The deployment workflow runs the full checks, deploys the Worker and then verifies the live MCP catalogue, annotations, narrowed schema, a valid call and rejection of broad input.
+
+## Privacy remediation 1.0.2
+
+The full public policy and private support route are served by this Worker. See [privacy operations](docs/privacy-operations.md) for support retention and [review remediation](docs/openai-review-remediation-1.0.2.md) for the evidence map. Deployment is separate from review submission.

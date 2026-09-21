@@ -38,7 +38,13 @@ export const TOOLS = [
 const ALLOWED = new Set(Object.keys(BASIC_INPUT_SCHEMA.properties));
 const REQUIRED = ["industry", "primary_goal"];
 
-function invalid(message) { throw new Error(`invalid_input:${message}`); }
+class ExpectedToolError extends Error {}
+
+export function publicToolErrorMessage(cause) {
+  return cause instanceof ExpectedToolError ? cause.message : "internal_error";
+}
+
+function invalid(message) { throw new ExpectedToolError(`invalid_input:${message}`); }
 function assertString(args, key, maxLength, required = false) {
   const value = args[key];
   if (value === undefined) { if (required) invalid(`${key}_required`); return; }
@@ -49,7 +55,7 @@ function assertString(args, key, maxLength, required = false) {
 
 export function validateBasicArgs(args) {
   if (!args || typeof args !== "object" || Array.isArray(args)) invalid("object_required");
-  for (const key of Object.keys(args)) if (!ALLOWED.has(key)) invalid(`unexpected_field:${key}`);
+  for (const key of Object.keys(args)) if (!ALLOWED.has(key)) invalid("unexpected_field");
   assertString(args, "industry", 120, true);
   assertString(args, "primary_goal", 240, true);
   assertString(args, "business_name", 100);
@@ -75,5 +81,5 @@ export async function callTool(name, args) {
     validateBasicArgs(args);
     return textResult(prepareBasic(args), "One Click prepared a Basic Mode handoff. Review it before authorising any external project creation.");
   }
-  throw new Error("tool_not_found");
+  throw new ExpectedToolError("tool_not_found");
 }
