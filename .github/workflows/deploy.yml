@@ -35,6 +35,20 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.33.1"
           command: deploy
+      - name: Verify live privacy settings
+        run: npm run verify:privacy
+        env:
+          ONECLICK_PRIVACY_EVIDENCE_PATH: artifacts/oneclick-privacy-settings.json
       - name: Smoke production
         run: npm run smoke:production
+        env:
+          ONECLICK_EVIDENCE_PATH: artifacts/oneclick-live-review.json
+      - name: Preserve review evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: oneclick-review-evidence-${{ github.sha }}
+          path: artifacts/*.json
+          retention-days: 30
+          if-no-files-found: error

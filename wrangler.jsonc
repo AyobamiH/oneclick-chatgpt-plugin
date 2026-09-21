@@ -5,7 +5,11 @@
   "compatibility_date": "2026-08-27",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
-  "observability": { "enabled": true },
+  "observability": {
+    "enabled": false,
+    "logs": { "enabled": false, "invocation_logs": false }
+  },
+  "logpush": false,
   "vars": {
     "ONECLICK_SITE_URL": "https://oneclickwebsitedesignfactory.com",
     "OPENAI_APPS_CHALLENGE": "bJOv4gQj_Xtt3yRg5qxnyPnyL3GNmIWTpJV5qNIq7hg"

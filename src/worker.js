@@ -1,4 +1,4 @@
-import { TOOLS, callTool } from "./tools.js";
+import { TOOLS, callTool, publicToolErrorMessage } from "./tools.js";
 import { record } from "./analytics.js";
 import { landing, privacy, support, terms } from "./pages.js";
 import { html, json } from "./utils.js";
@@ -13,19 +13,20 @@ const error = (id, code, message) => ({ jsonrpc: "2.0", id: id ?? null, error: {
 async function rpc(payload, request, env, ctx) {
   if (!payload || payload.jsonrpc !== "2.0" || typeof payload.method !== "string") return error(payload?.id, -32600, "Invalid Request");
   const { id, method, params = {} } = payload;
+  if (!params || typeof params !== "object" || Array.isArray(params)) return error(id, -32602, "Invalid params");
   if (method === "initialize") return ok(id, { protocolVersion: params.protocolVersion || "2025-06-18", capabilities: { tools: { listChanged: false } }, serverInfo: SERVER, instructions: INSTRUCTIONS });
   if (method === "ping") return ok(id, {});
   if (method === "tools/list") return ok(id, { tools: TOOLS });
   if (method === "tools/call") {
-    if (!params.name) return error(id, -32602, "Tool name required");
+    if (typeof params.name !== "string" || !params.name) return error(id, -32602, "Tool name required");
     const started = Date.now();
     try {
-      const result = await callTool(params.name, params.arguments || {});
+      const result = await callTool(params.name, params.arguments === undefined ? {} : params.arguments);
       record(env, ctx, request, { tool: params.name, outcome: "success", status: 200, latencyMs: Date.now() - started });
       return ok(id, result);
     } catch (cause) {
       record(env, ctx, request, { tool: params.name, outcome: "error", status: 200, latencyMs: Date.now() - started });
-      const message = cause instanceof Error ? cause.message : String(cause);
+      const message = publicToolErrorMessage(cause);
       return ok(id, { isError: true, content: [{ type: "text", text: `One Click could not prepare the handoff: ${message}` }], structuredContent: { status: "blocked", projectCreated: false, deployed: false } });
     }
   }
@@ -52,7 +53,9 @@ async function mcp(request, env, ctx) {
   if (new TextEncoder().encode(raw).length > MAX_MCP_BODY_BYTES) return json(error(null, -32600, "Request body too large"), 413, cors(request));
   let payload;
   try { payload = JSON.parse(raw); } catch { return json(error(null, -32700, "Parse error"), 400, cors(request)); }
-  const result = await rpc(payload, request, env, ctx);
+  let result;
+  try { result = await rpc(payload, request, env, ctx); }
+  catch { return json(error(payload?.id, -32603, "Internal error"), 500, cors(request)); }
   if (result === null) return new Response(null, { status: 202, headers: cors(request) });
   return json(result, 200, { ...cors(request), "mcp-protocol-version": "2025-06-18" });
 }

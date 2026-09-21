@@ -1,6 +1,6 @@
 {
   "name": "oneclick-chatgpt-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "description": "Turn bounded website requirements into a structured Lovable handoff from ChatGPT.",
@@ -14,8 +14,12 @@
     "dev": "npx --yes wrangler@4.33.1 dev",
     "deploy": "npx --yes wrangler@4.33.1 deploy",
     "deploy:dry": "npx --yes wrangler@4.33.1 deploy --dry-run",
-    "smoke:production": "node scripts/smoke-production.mjs"
+    "smoke:production": "node scripts/smoke-production.mjs",
+    "verify:privacy": "node scripts/verify-production-privacy.mjs",
+    "evidence:production": "node scripts/record-review-evidence.mjs"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "license": "MIT"
 }
