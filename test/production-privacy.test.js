@@ -32,11 +32,122 @@ test("Live verification uses a single fixed read-only endpoint and returns only 
   } });
   assert.equal(calls, 1);
   assert.equal(result.status, "verified");
+  assert.equal(result.settings_source, "script_settings");
   assert.equal(result.observed_at, "2026-09-21T23:00:00.000Z");
   assert.equal(Object.values(result.checks).every((value) => typeof value === "boolean"), true);
   assert.equal(JSON.stringify(result).includes(SECRET), false);
   assert.equal(JSON.stringify(result).includes(ACCOUNT), false);
   assert.equal("bindings" in result, false);
+});
+
+test("Only missing or null narrow observability triggers the fixed broader settings read", async (t) => {
+  const logs = ["log", "info", "warn", "error", "debug"].map((method) => t.mock.method(console, method, () => {}));
+  for (const omission of ["missing", "null"]) {
+    const narrow = safePayload();
+    if (omission === "missing") delete narrow.result.observability;
+    else narrow.result.observability = null;
+    const broad = safePayload();
+    broad.result.bindings = [{ name: SECRET, text: SECRET }];
+    broad.result.tags = [SECRET];
+    broad.result.compatibility_date = SECRET;
+    const calls = [];
+    const result = await verifyProductionPrivacy({ env, now, fetchImpl: async (url, options) => {
+      calls.push({ url, options });
+      return response(calls.length === 1 ? narrow : broad);
+    } });
+    assert.equal(calls.length, 2);
+    assert.deepEqual(calls.map((call) => call.url), [
+      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/oneclick-chatgpt/script-settings`,
+      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/oneclick-chatgpt/settings`
+    ]);
+    for (const { options } of calls) {
+      assert.equal(options.method, "GET");
+      assert.equal(options.redirect, "error");
+      assert.equal(options.headers.Authorization, `Bearer ${SECRET}`);
+      assert.equal("body" in options, false);
+      assert.equal(options.signal instanceof AbortSignal, true);
+    }
+    assert.equal(result.status, "verified");
+    assert.equal(result.settings_source, "script_settings_and_settings");
+    assert.equal(JSON.stringify(result).includes(SECRET), false);
+    assert.equal(JSON.stringify(result).includes(ACCOUNT), false);
+    assert.equal("bindings" in result, false);
+  }
+  for (const log of logs) assert.equal(log.mock.callCount(), 0);
+});
+
+test("Fallback never masks unsafe or malformed narrow settings", async () => {
+  const mutations = [
+    (p) => { p.result.observability = false; },
+    (p) => { p.result.observability = []; },
+    (p) => { p.result.observability = {}; },
+    (p) => { p.result.observability.enabled = true; },
+    (p) => { p.result.observability.logs.enabled = true; },
+    (p) => { p.result.observability.traces.enabled = true; },
+    (p) => { delete p.result.observability; p.result.logpush = true; },
+    (p) => { delete p.result.observability; delete p.result.logpush; },
+    (p) => { delete p.result.observability; p.result.tail_consumers = [{ service: SECRET }]; },
+    (p) => { delete p.result.observability; delete p.result.tail_consumers; }
+  ];
+  for (const mutate of mutations) {
+    const narrow = safePayload(); mutate(narrow);
+    let calls = 0;
+    await assert.rejects(verifyProductionPrivacy({ env, fetchImpl: async () => { calls++; return response(calls === 1 ? narrow : safePayload()); } }));
+    assert.equal(calls, 1);
+  }
+});
+
+test("Fallback must independently prove disabled observability and agree on safe script controls", async () => {
+  const mutations = [
+    (p) => { delete p.result.observability; },
+    (p) => { p.result.observability = null; },
+    (p) => { p.result.observability = []; },
+    (p) => { p.result.observability = {}; },
+    (p) => { p.result.observability.enabled = true; },
+    (p) => { p.result.observability.logs.persist = true; },
+    (p) => { p.result.observability.traces.enabled = true; },
+    (p) => { p.result.observability.traces.destinations = [SECRET]; },
+    (p) => { p.result.observability.issues.enabled = true; },
+    (p) => { p.result.logpush = true; },
+    (p) => { delete p.result.logpush; },
+    (p) => { p.result.tail_consumers = [{ service: SECRET }]; },
+    (p) => { delete p.result.tail_consumers; }
+  ];
+  for (const mutate of mutations) {
+    const narrow = safePayload(); delete narrow.result.observability;
+    const broad = safePayload(); mutate(broad);
+    let calls = 0;
+    await assert.rejects(verifyProductionPrivacy({ env, fetchImpl: async () => response(++calls === 1 ? narrow : broad) }), (error) => {
+      assert.equal(JSON.stringify(privacyFailureReport(error)).includes(SECRET), false);
+      return true;
+    });
+    assert.equal(calls, 2);
+  }
+});
+
+test("Failed broader reads stay failed without exporting provider bodies or old success receipts", async () => {
+  const narrow = safePayload(); delete narrow.result.observability;
+  const failures = [
+    async () => { throw new Error(SECRET); },
+    async () => new Response(SECRET, { status: 403 }),
+    async () => new Response(SECRET, { status: 200 }),
+    async () => response({ success: false, errors: [{ message: SECRET }], result: safePayload().result }),
+    async () => response({ ...safePayload(), errors: [{ message: SECRET }] })
+  ];
+  const dir = await mkdtemp(join(tmpdir(), "oneclick-fallback-"));
+  try {
+    const path = join(dir, "privacy.json");
+    for (const failedRead of failures) {
+      await writeFile(path, JSON.stringify({ status: "verified" }));
+      let calls = 0;
+      await assert.rejects(runProductionPrivacyVerification({ env: { ...env, ONECLICK_PRIVACY_EVIDENCE_PATH: path }, fetchImpl: async () => ++calls === 1 ? response(narrow) : failedRead() }));
+      assert.equal(calls, 2);
+      const receipt = JSON.parse(await readFile(path, "utf8"));
+      assert.equal(receipt.status, "failed");
+      assert.equal(JSON.stringify(receipt).includes(SECRET), false);
+      assert.equal(JSON.stringify(receipt).includes(ACCOUNT), false);
+    }
+  } finally { await rm(dir, { recursive: true, force: true }); }
 });
 
 test("Explicit disabled parent accepts documented absent or null logs/traces overrides", () => {

@@ -2,9 +2,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
-// GET /script-settings is the documented, narrow script-level endpoint. Unlike
-// /settings, it does not retrieve Worker bindings or other version configuration.
+// Prefer the narrow script-level endpoint. Some live responses omit its optional
+// observability object, so only that evidence gap triggers GET /settings. The
+// broader response is projected in memory; bindings never enter reports.
 // https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/settings/methods/get/
+// https://developers.cloudflare.com/api/resources/workers/subresources/scripts/subresources/script_and_version_settings/methods/get/
 const API = "https://api.cloudflare.com/client/v4";
 const WORKER = "oneclick-chatgpt";
 const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -29,9 +31,23 @@ function noExportOrPersistence(value, code) {
   if (own(value, "destinations") && (!Array.isArray(value.destinations) || value.destinations.length !== 0)) fail(code);
 }
 
-export function checkPrivacySettings(payload) {
+function privacySettingsFromResponse(payload) {
   if (!record(payload) || payload.success !== true || !Array.isArray(payload.errors) || payload.errors.length !== 0 || !record(payload.result)) fail("api_response_not_successful");
-  const settings = payload.result;
+  const settings = {};
+  for (const key of ["observability", "logpush", "tail_consumers"]) {
+    if (own(payload.result, key)) settings[key] = payload.result[key];
+  }
+  return settings;
+}
+
+function checkScriptControls(settings) {
+  falseRequired(settings, "logpush", "logpush_not_explicitly_disabled");
+  // The SDK documents nullable tail_consumers. Require the field to be present:
+  // an omitted field is not enough evidence for this independent release check.
+  if (!own(settings, "tail_consumers") || (settings.tail_consumers !== null && (!Array.isArray(settings.tail_consumers) || settings.tail_consumers.length !== 0))) fail("tail_consumers_not_confirmed_absent");
+}
+
+function checkProjectedPrivacySettings(settings) {
   if (!record(settings.observability)) fail("observability_settings_missing");
   const obs = settings.observability;
   onlyKeys(obs, ["enabled", "head_sampling_rate", "logs", "traces", "issues", "redact_query_string"], "observability_schema_unrecognised");
@@ -64,10 +80,7 @@ export function checkPrivacySettings(payload) {
     onlyKeys(obs.issues, ["enabled"], "issues_schema_unrecognised");
     falseRequired(obs.issues, "enabled", "issues_not_explicitly_disabled");
   }
-  falseRequired(settings, "logpush", "logpush_not_explicitly_disabled");
-  // The SDK documents nullable tail_consumers. Require the field to be present:
-  // an omitted field is not enough evidence for this independent release check.
-  if (!own(settings, "tail_consumers") || (settings.tail_consumers !== null && (!Array.isArray(settings.tail_consumers) || settings.tail_consumers.length !== 0))) fail("tail_consumers_not_confirmed_absent");
+  checkScriptControls(settings);
   return {
     observability_disabled: true,
     stored_logs_disabled: true,
@@ -84,6 +97,10 @@ export function checkPrivacySettings(payload) {
   };
 }
 
+export function checkPrivacySettings(payload) {
+  return checkProjectedPrivacySettings(privacySettingsFromResponse(payload));
+}
+
 function credentials(env) {
   const token = env.CLOUDFLARE_API_TOKEN || env.CF_API_TOKEN;
   const account = env.CLOUDFLARE_ACCOUNT_ID || env.CF_ACCOUNT_ID;
@@ -95,18 +112,35 @@ function credentials(env) {
 
 export async function verifyProductionPrivacy({ env = process.env, fetchImpl = globalThis.fetch, now = () => new Date() } = {}) {
   const { token, account } = credentials(env);
-  let response;
-  try {
-    response = await fetchImpl(`${API}/accounts/${account}/workers/scripts/${WORKER}/script-settings`, {
-      method: "GET", redirect: "error", signal: AbortSignal.timeout(15_000),
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" }
-    });
-  } catch { fail("cloudflare_settings_read_failed"); }
-  if (!(response instanceof Response) || !response.ok) fail("cloudflare_settings_http_failed");
-  let payload;
-  try { payload = await response.json(); } catch { fail("cloudflare_settings_json_invalid"); }
-  const checks = checkPrivacySettings(payload);
-  return { schema_version: 1, status: "verified", check: "production_privacy_settings", worker: WORKER, observed_at: now().toISOString(), checks };
+  async function readSettings(endpoint) {
+    const prefix = endpoint === "settings" ? "cloudflare_fallback_settings" : "cloudflare_settings";
+    let response;
+    try {
+      response = await fetchImpl(`${API}/accounts/${account}/workers/scripts/${WORKER}/${endpoint}`, {
+        method: "GET", redirect: "error", signal: AbortSignal.timeout(15_000),
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" }
+      });
+    } catch { fail(`${prefix}_read_failed`); }
+    if (!(response instanceof Response) || !response.ok) fail(`${prefix}_http_failed`);
+    let payload;
+    try { payload = await response.json(); } catch { fail(`${prefix}_json_invalid`); }
+    return privacySettingsFromResponse(payload);
+  }
+  const narrow = await readSettings("script-settings");
+  // Unsafe or missing script controls must fail before any broader read. A
+  // second endpoint must never hide evidence of enabled logging or consumers.
+  checkScriptControls(narrow);
+  let settings = narrow;
+  let settingsSource = "script_settings";
+  if (!own(narrow, "observability") || narrow.observability === null) {
+    settings = await readSettings("settings");
+    settingsSource = "script_settings_and_settings";
+    // Both responses must independently confirm the script controls. Null and
+    // [] are the documented equivalent representations of no tail consumers.
+    checkScriptControls(settings);
+  }
+  const checks = checkProjectedPrivacySettings(settings);
+  return { schema_version: 1, status: "verified", check: "production_privacy_settings", worker: WORKER, observed_at: now().toISOString(), settings_source: settingsSource, checks };
 }
 
 export function privacyFailureReport(error) {

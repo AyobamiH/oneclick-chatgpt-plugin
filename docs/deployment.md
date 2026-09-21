@@ -11,6 +11,8 @@ The deployment uses pinned Wrangler 4.33.1, matching `npm run deploy:dry`. Basic
 
 The Analytics Engine binding remains enabled for narrowly scoped, three-month operational events. Stored Worker logs, invocation logs and Logpush are explicitly disabled. The live-settings verifier also rejects enabled traces or export/tail destinations. A missing read permission or an unverified setting fails the deployment check; it does not produce a success claim.
 
+The verifier first reads the Worker's `/script-settings` endpoint. If that successful response omits observability, it reads `/settings` and validates only the privacy-related fields, including agreement with the first response. It never prints or saves the broader response or its bindings. Missing or unsafe settings still fail verification; the fallback does not treat missing evidence as disabled logging.
+
 ## Verification
 
 ```sh
