@@ -30,16 +30,21 @@ jobs:
         with:
           node-version: 24
       - run: npm run check
+      - name: Locate the existing owned-domain zone
+        id: information-zone
+        run: node scripts/find-information-zone.mjs
       - name: Serve owned-domain plugin information pages
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: ${{ steps.information-zone.outputs.account_id || secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.33.1"
           command: deploy --config wrangler-pages.jsonc
       - name: Verify information-page privacy settings
         run: npm run verify:privacy
         env:
+          CF_ACCOUNT_ID: ${{ steps.information-zone.outputs.account_id || secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ steps.information-zone.outputs.account_id || secrets.CLOUDFLARE_ACCOUNT_ID }}
           ONECLICK_PRIVACY_WORKER: oneclick-plugin-pages
           ONECLICK_PRIVACY_EVIDENCE_PATH: artifacts/oneclick-pages-privacy-settings.json
       - name: Verify owned-domain information pages
