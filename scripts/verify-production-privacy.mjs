@@ -10,6 +10,7 @@ import { pathToFileURL } from "node:url";
 // https://developers.cloudflare.com/api/resources/workers/subresources/beta/subresources/workers/methods/get/
 const API = "https://api.cloudflare.com/client/v4";
 const WORKER = "oneclick-chatgpt";
+const WORKERS = [WORKER, "oneclick-plugin-pages"];
 const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const own = (value, key) => Object.hasOwn(value, key);
 
@@ -38,9 +39,9 @@ function checkDisabledCollectionPreferences(value, collection) {
   if (own(value, "destinations") && (!Array.isArray(value.destinations) || value.destinations.length !== 0)) fail(`${collection}_destinations_not_empty`);
 }
 
-function privacySettingsFromResponse(payload, workerMetadata = false) {
+function privacySettingsFromResponse(payload, workerMetadata = false, worker = WORKER) {
   if (!record(payload) || payload.success !== true || !Array.isArray(payload.errors) || payload.errors.length !== 0 || !record(payload.result)) fail("api_response_not_successful");
-  if (workerMetadata && payload.result.name !== WORKER) fail("worker_metadata_identity_mismatch");
+  if (workerMetadata && payload.result.name !== worker) fail("worker_metadata_identity_mismatch");
   const settings = {};
   for (const key of ["observability", "logpush", "tail_consumers"]) {
     if (own(payload.result, key)) settings[key] = payload.result[key];
@@ -133,10 +134,12 @@ function credentials(env) {
 }
 
 export async function verifyProductionPrivacy({ env = process.env, fetchImpl = globalThis.fetch, now = () => new Date() } = {}) {
+  const worker = env.ONECLICK_PRIVACY_WORKER || WORKER;
+  if (!WORKERS.includes(worker)) fail("worker_identity_not_allowed");
   const { token, account } = credentials(env);
   async function readSettings(workerMetadata = false) {
     const prefix = workerMetadata ? "cloudflare_worker_metadata" : "cloudflare_settings";
-    const path = workerMetadata ? `workers/${WORKER}` : `scripts/${WORKER}/script-settings`;
+    const path = workerMetadata ? `workers/${worker}` : `scripts/${worker}/script-settings`;
     let response;
     try {
       response = await fetchImpl(`${API}/accounts/${account}/workers/${path}`, {
@@ -147,7 +150,7 @@ export async function verifyProductionPrivacy({ env = process.env, fetchImpl = g
     if (!(response instanceof Response) || !response.ok) fail(`${prefix}_http_failed`);
     let payload;
     try { payload = await response.json(); } catch { fail(`${prefix}_json_invalid`); }
-    return privacySettingsFromResponse(payload, workerMetadata);
+    return privacySettingsFromResponse(payload, workerMetadata, worker);
   }
   const narrow = await readSettings();
   // Unsafe or missing script controls must fail before any broader read. A
@@ -165,11 +168,11 @@ export async function verifyProductionPrivacy({ env = process.env, fetchImpl = g
     checkScriptControls(settings, true);
   }
   const checks = checkProjectedPrivacySettings(settings, workerMetadata);
-  return { schema_version: 2, status: "verified", check: "production_privacy_settings", worker: WORKER, observed_at: now().toISOString(), settings_source: settingsSource, checks, inactive_preferences: inactivePreferences(settings) };
+  return { schema_version: 2, status: "verified", check: "production_privacy_settings", worker, observed_at: now().toISOString(), settings_source: settingsSource, checks, inactive_preferences: inactivePreferences(settings) };
 }
 
-export function privacyFailureReport(error) {
-  return { schema_version: 2, status: "failed", check: "production_privacy_settings", worker: WORKER,
+export function privacyFailureReport(error, worker = WORKER) {
+  return { schema_version: 2, status: "failed", check: "production_privacy_settings", worker: WORKERS.includes(worker) ? worker : WORKER,
     reason: error instanceof VerificationFailure ? error.code : "unexpected_verification_failure" };
 }
 
@@ -189,7 +192,7 @@ export async function runProductionPrivacyVerification(options = {}) {
   catch (error) {
     // Overwrite an older receipt with a safe failure, so stale success cannot be
     // mistaken for evidence of this attempt. Remote error bodies are never saved.
-    await saveEvidence(env, privacyFailureReport(error));
+    await saveEvidence(env, privacyFailureReport(error, env.ONECLICK_PRIVACY_WORKER));
     throw error;
   }
   await saveEvidence(env, report);
@@ -198,5 +201,5 @@ export async function runProductionPrivacyVerification(options = {}) {
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   try { console.log(JSON.stringify(await runProductionPrivacyVerification(), null, 2)); }
-  catch (error) { console.error(JSON.stringify(privacyFailureReport(error))); process.exitCode = 1; }
+  catch (error) { console.error(JSON.stringify(privacyFailureReport(error, process.env.ONECLICK_PRIVACY_WORKER))); process.exitCode = 1; }
 }

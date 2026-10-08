@@ -42,4 +42,8 @@ Production pushes require `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. Th
 
 ## Privacy remediation 1.0.2
 
-The full public policy and private support route are served by this Worker. See [privacy operations](docs/privacy-operations.md) for support retention and [review remediation](docs/openai-review-remediation-1.0.2.md) for the evidence map. Deployment is separate from review submission.
+The full public policy and private support route remain available from this Worker. See [privacy operations](docs/privacy-operations.md) for support retention and [review remediation](docs/openai-review-remediation-1.0.2.md) for the evidence map. Deployment is separate from review submission.
+
+## Owned-domain information pages: 1.0.3 candidate
+
+The candidate manifest points to the dedicated [plugin introduction](https://oneclickwebsitedesignfactory.com/chatgpt/), [privacy](https://oneclickwebsitedesignfactory.com/chatgpt/privacy/), [terms](https://oneclickwebsitedesignfactory.com/chatgpt/terms/) and [support](https://oneclickwebsitedesignfactory.com/chatgpt/support/) pages. These are separate from the main website's original legal and account routes. The MCP endpoint and tool contract are unchanged. See [the release handoff](docs/owned-domain-release-1.0.3.md) for verification and the separate publisher-review step.

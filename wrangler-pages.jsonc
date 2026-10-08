@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "oneclick-plugin-pages",
+  "main": "./src/information-pages-worker.js",
+  "compatibility_date": "2026-08-27",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "oneclickwebsitedesignfactory.com/chatgpt/*", "zone_name": "oneclickwebsitedesignfactory.com" },
+    { "pattern": "oneclickwebsitedesignfactory.com/chatgpt", "zone_name": "oneclickwebsitedesignfactory.com" }
+  ],
+  "observability": {
+    "enabled": false,
+    "logs": { "enabled": false, "invocation_logs": false }
+  },
+  "logpush": false
+}
