@@ -30,6 +30,22 @@ jobs:
         with:
           node-version: 24
       - run: npm run check
+      - name: Serve owned-domain plugin information pages
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.33.1"
+          command: deploy --config wrangler-pages.jsonc
+      - name: Verify information-page privacy settings
+        run: npm run verify:privacy
+        env:
+          ONECLICK_PRIVACY_WORKER: oneclick-plugin-pages
+          ONECLICK_PRIVACY_EVIDENCE_PATH: artifacts/oneclick-pages-privacy-settings.json
+      - name: Verify owned-domain information pages
+        run: npm run smoke:information-pages
+        env:
+          ONECLICK_INFORMATION_EVIDENCE_PATH: artifacts/oneclick-information-pages.json
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0
         with:

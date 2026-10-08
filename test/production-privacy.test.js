@@ -31,6 +31,34 @@ function disabledWorkerPayload() {
 }
 const response = (payload = safePayload()) => Response.json(payload);
 
+test("The information Worker uses its own fixed endpoint and rejects the MCP Worker's fallback identity", async () => {
+  const pagesEnv = { ...env, ONECLICK_PRIVACY_WORKER: "oneclick-plugin-pages" };
+  for (const correctIdentity of [true, false]) {
+    let calls = 0;
+    const options = { env: pagesEnv, now, fetchImpl: async (url) => {
+      calls++;
+      if (calls === 1) {
+        assert.equal(url, `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/scripts/oneclick-plugin-pages/script-settings`);
+        const payload = safePayload(); payload.result.observability = null; return response(payload);
+      }
+      assert.equal(url, `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT}/workers/workers/oneclick-plugin-pages`);
+      const payload = disabledWorkerPayload();
+      payload.result.name = correctIdentity ? "oneclick-plugin-pages" : "oneclick-chatgpt";
+      return response(payload);
+    } };
+    if (correctIdentity) assert.equal((await verifyProductionPrivacy(options)).worker, "oneclick-plugin-pages");
+    else await assert.rejects(() => verifyProductionPrivacy(options), /worker_metadata_identity_mismatch/);
+  }
+});
+
+test("An unrecognised Worker identity cannot select an API path or leak into a failure receipt", async () => {
+  let calls = 0;
+  const pagesEnv = { ...env, ONECLICK_PRIVACY_WORKER: SECRET };
+  await assert.rejects(() => verifyProductionPrivacy({ env: pagesEnv, fetchImpl: async () => { calls++; } }), /worker_identity_not_allowed/);
+  assert.equal(calls, 0);
+  assert.equal(JSON.stringify(privacyFailureReport(new Error(SECRET), SECRET)).includes(SECRET), false);
+});
+
 test("Live verification uses a single fixed read-only endpoint and returns only safe fields", async () => {
   const payload = safePayload();
   payload.result.bindings = [{ name: SECRET, text: SECRET }];

@@ -1,27 +1,34 @@
 {
   "name": "one-click",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Turn bounded website requirements into a structured, reviewable Lovable website brief from ChatGPT.",
   "author": {
     "name": "AYOBAMI JOHN HAASTRUP",
     "url": "https://oneclickwebsitedesignfactory.com"
   },
-  "homepage": "https://oneclick-chatgpt.woeinvests.workers.dev",
+  "homepage": "https://oneclickwebsitedesignfactory.com/chatgpt/",
   "repository": "https://github.com/AyobamiH/oneclick-chatgpt-plugin",
   "license": "MIT",
   "logo": "./assets/logo.png",
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "One Click",
     "logo": "./assets/logo.png",
     "composerIcon": "./assets/logo.png",
-    "shortDescription": "Prepare a bounded website brief",
+    "shortDescription": "Prepare your website brief",
     "longDescription": "One Click turns the minimum website requirements for the current task into a structured, reviewable website brief. The current release does not read or save a One Click account, persist the business brief, create a project or deploy a website. A separate Lovable action is used only after the user authorises external project creation.",
     "developerName": "AYOBAMI JOHN HAASTRUP",
     "category": "Productivity",
-    "website": "https://oneclickwebsitedesignfactory.com",
-    "privacyPolicy": "https://oneclick-chatgpt.woeinvests.workers.dev/privacy",
-    "termsOfService": "https://oneclick-chatgpt.woeinvests.workers.dev/terms",
-    "support": "https://oneclick-chatgpt.woeinvests.workers.dev/support"
+    "capabilities": ["Prepare a website brief", "Review a build prompt"],
+    "websiteURL": "https://oneclickwebsitedesignfactory.com/chatgpt/",
+    "privacyPolicyURL": "https://oneclickwebsitedesignfactory.com/chatgpt/privacy/",
+    "termsOfServiceURL": "https://oneclickwebsitedesignfactory.com/chatgpt/terms/",
+    "supportURL": "https://oneclickwebsitedesignfactory.com/chatgpt/support/",
+    "defaultPrompt": [
+      "Prepare a website brief for a pet groomer whose main goal is appointment enquiries.",
+      "Help me plan a consultant's website with a clear contact call to action.",
+      "Turn my small business website requirements into a brief I can review before building."
+    ]
   }
 }
