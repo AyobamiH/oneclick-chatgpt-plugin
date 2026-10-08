@@ -1,34 +1,26 @@
 {
-  "name": "one-click",
-  "version": "1.0.3",
-  "description": "Turn bounded website requirements into a structured, reviewable Lovable website brief from ChatGPT.",
   "author": {
-    "name": "AYOBAMI JOHN HAASTRUP",
-    "url": "https://oneclickwebsitedesignfactory.com"
+    "name": "AYOBAMI JOHN HAASTRUP"
   },
-  "homepage": "https://oneclickwebsitedesignfactory.com/chatgpt/",
-  "repository": "https://github.com/AyobamiH/oneclick-chatgpt-plugin",
-  "license": "MIT",
-  "logo": "./assets/logo.png",
-  "skills": "./skills/",
-  "mcpServers": "./.mcp.json",
+  "description": "Turn a website idea into a structured, reviewable brief with content direction, calls to action, layout and brand feel. Start with your industry and website goal, then optionally add services and brand preferences. One Click prepares the brief without an account and does not save its content. Creating a project in the separately installed Lovable plugin is a separate action that requires your authorisation. One Click does not create, publish or deploy websites.",
   "interface": {
-    "displayName": "One Click",
-    "logo": "./assets/logo.png",
-    "composerIcon": "./assets/logo.png",
-    "shortDescription": "Prepare your website brief",
-    "longDescription": "One Click turns the minimum website requirements for the current task into a structured, reviewable website brief. The current release does not read or save a One Click account, persist the business brief, create a project or deploy a website. A separate Lovable action is used only after the user authorises external project creation.",
-    "developerName": "AYOBAMI JOHN HAASTRUP",
+    "capabilities": [],
     "category": "Productivity",
-    "capabilities": ["Prepare a website brief", "Review a build prompt"],
-    "websiteURL": "https://oneclickwebsitedesignfactory.com/chatgpt/",
-    "privacyPolicyURL": "https://oneclickwebsitedesignfactory.com/chatgpt/privacy/",
-    "termsOfServiceURL": "https://oneclickwebsitedesignfactory.com/chatgpt/terms/",
-    "supportURL": "https://oneclickwebsitedesignfactory.com/chatgpt/support/",
     "defaultPrompt": [
-      "Prepare a website brief for a pet groomer whose main goal is appointment enquiries.",
-      "Help me plan a consultant's website with a clear contact call to action.",
-      "Turn my small business website requirements into a brief I can review before building."
-    ]
-  }
+      "Turn my business idea into a build-ready brief, then ask before creating anything in Lovable.",
+      "Turn my website idea into a clear page structure, content direction and calls to action before Lovable builds it.",
+      "Prepare a simple website brief for my local business, then show me exactly what Lovable will receive."
+    ],
+    "developerName": "AYOBAMI JOHN HAASTRUP",
+    "displayName": "One Click",
+    "longDescription": "Turn a website idea into a structured, reviewable brief with content direction, calls to action, layout and brand feel. Start with your industry and website goal, then optionally add services and brand preferences. One Click prepares the brief without an account and does not save its content. Creating a project in the separately installed Lovable plugin is a separate action that requires your authorisation. One Click does not create, publish or deploy websites.",
+    "privacyPolicyURL": "https://oneclickwebsitedesignfactory.com/chatgpt/privacy/",
+    "shortDescription": "Prepare website build briefs",
+    "supportURL": "https://oneclickwebsitedesignfactory.com/chatgpt/support/",
+    "termsOfServiceURL": "https://oneclickwebsitedesignfactory.com/chatgpt/terms/",
+    "websiteURL": "https://oneclickwebsitedesignfactory.com/chatgpt/"
+  },
+  "name": "app-698c5319a3c8819180537c0c37cde979",
+  "skills": "./skills",
+  "version": "1.0.3"
 }
