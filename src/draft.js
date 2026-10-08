@@ -23,7 +23,7 @@ function basicPrompt(b) {
     b.headline && `Headline direction: ${b.headline}`,
     b.cta && `Primary CTA: ${b.cta}`,
     `Layout: ${b.layout}`,
-    b.services.length && `Services to represent: ${b.services.join(", ")}`,
+    b.services.length > 0 && `Services to represent: ${b.services.join(", ")}`,
     "",
     "Include a clean hero, short business introduction, services section and contact section. Keep the draft lightweight and editable. Do not invent testimonials, certifications, prices, addresses, contact details or other business facts that were not supplied. Use clearly labelled placeholders when a fact is missing."
   ].filter((line) => line !== false && line !== "");
