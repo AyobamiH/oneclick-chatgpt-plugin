@@ -10,6 +10,8 @@ test("Basic Mode is lightweight and does not claim external creation", () => {
   assert.equal(result.lovable.project_knowledge, null);
   assert.match(result.lovable.initial_message, /Pet grooming/);
   assert.match(result.lovable.initial_message, /Book appointments/);
+  assert.doesNotMatch(result.lovable.initial_message, /^0$/m);
+  assert.doesNotMatch(result.lovable.initial_message, /Services to represent:/);
 });
 
 test("Retained optional fields affect the generated handoff", () => {
@@ -33,4 +35,12 @@ test("No location or broad notes are introduced by normalisation", () => {
   assert.equal("location" in brief, false);
   assert.equal("notes" in brief, false);
   assert.equal("referenceImages" in brief, false);
+});
+
+
+test("An explicit empty services list produces no numeric or empty service line", () => {
+  const result = prepareBasic({ industry: "Pet care", primary_goal: "Get enquiries", services: [] });
+  assert.doesNotMatch(result.lovable.initial_message, /^0$/m);
+  assert.doesNotMatch(result.lovable.initial_message, /Services to represent:/);
+  assert.match(result.lovable.initial_message, /Use clearly labelled placeholders/);
 });
