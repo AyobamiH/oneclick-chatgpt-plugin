@@ -22,7 +22,7 @@ test("Public information requests cannot forward visitor data or select an upstr
   assert.equal(await response.text(), "<h1>Public page</h1>");
 });
 
-test("Only the seven public files may be fetched; account and MCP routes do not reach an upstream", async () => {
+test("Only the eight public files may be fetched; account and MCP routes do not reach an upstream", async () => {
   let calls = 0;
   for (const path of ["/", "/privacy", "/terms", "/auth", "/mcp", "/chatgpt/account", "/chatgpt/unknown.mjs", "/chatgpt/%2f%2fevil.example/", "/chatgpt/../auth"]) {
     const response = await serveInformationPage(new Request("https://oneclickwebsitedesignfactory.com" + path), async () => { calls++; return new Response("unexpected"); });
@@ -67,7 +67,7 @@ test("Upstream failures and unexpected content never expose a provider body or s
 });
 
 test("Legal pages and all assets are readable with their correct content types", async () => {
-  for (const [path, type] of [["privacy/", "text/html"], ["terms/", "text/html"], ["support/", "text/html"], ["site.css", "text/css"], ["analytics.mjs", "text/javascript"], ["analytics-core.mjs", "application/javascript"]]) {
+  for (const [path, type] of [["privacy/", "text/html"], ["terms/", "text/html"], ["support/", "text/html"], ["site.css", "text/css"], ["analytics.mjs", "text/javascript"], ["analytics-core.mjs", "application/javascript"], ["analytics-config.mjs", "application/javascript"]]) {
     const response = await serveInformationPage(new Request("https://oneclickwebsitedesignfactory.com/chatgpt/" + path), async () => new Response("public", { headers: { "content-type": type } }));
     assert.equal(response.status, 200, path);
     assert.equal(response.headers.get("content-type"), type);
@@ -104,4 +104,19 @@ test("The information Worker routes only the plugin prefix and has no operationa
   assert.equal(config.observability.logs.enabled, false);
   assert.equal(config.logpush, false);
   assert.equal(config.analytics_engine_datasets, undefined);
+});
+
+
+test("The added fixed analytics configuration asset strips visitor data before fetching", async () => {
+  const request = new Request("https://oneclickwebsitedesignfactory.com/chatgpt/analytics-config.mjs?private=marker", {
+    headers: { cookie: "private-cookie", authorization: "private-token", referer: "https://private.example/" }
+  });
+  const response = await serveInformationPage(request, async (url, options) => {
+    assert.equal(url, "https://oneclickwebsitedesignfactory.pages.dev/chatgpt/analytics-config.mjs");
+    assert.deepEqual(options.headers, { accept: "text/javascript, application/javascript", "accept-encoding": "identity" });
+    assert.equal("body" in options, false);
+    return new Response("export const publicConfig = true;", { headers: { "content-type": "application/javascript" } });
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "application/javascript");
 });

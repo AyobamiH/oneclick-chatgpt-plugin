@@ -6,7 +6,8 @@ const paths = new Map([
   ["/chatgpt/support/", "text/html"],
   ["/chatgpt/site.css", "text/css"],
   ["/chatgpt/analytics.mjs", "javascript"],
-  ["/chatgpt/analytics-core.mjs", "javascript"]
+  ["/chatgpt/analytics-core.mjs", "javascript"],
+  ["/chatgpt/analytics-config.mjs", "javascript"]
 ]);
 const aliases = new Map([
   ["/chatgpt", "/chatgpt/"],

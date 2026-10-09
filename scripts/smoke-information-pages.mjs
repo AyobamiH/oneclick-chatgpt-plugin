@@ -20,7 +20,7 @@ try {
     }
     report.pages.push({ path, status: response.status, canonical: true, expected_content: true, scripts_absent: path === "/chatgpt/" ? null : true });
   }
-  for (const [file, type] of [["site.css", "text/css"], ["analytics.mjs", "javascript"], ["analytics-core.mjs", "javascript"], ["sitemap.xml", "xml"]]) {
+  for (const [file, type] of [["site.css", "text/css"], ["analytics.mjs", "javascript"], ["analytics-core.mjs", "javascript"], ["analytics-config.mjs", "javascript"], ["sitemap.xml", "xml"]]) {
     const response = await fetch(`${origin}/chatgpt/${file}`, { headers: { DNT: "1", "Sec-GPC": "1" }, signal: AbortSignal.timeout(15000), redirect: "error" });
     require(response.status === 200 && (response.headers.get("content-type") || "").includes(type), "information_asset_failed");
     const content = await response.text();
