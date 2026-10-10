@@ -24,3 +24,5 @@ await access(new URL("assets/logo.png", root));
 await access(new URL("skills/build-with-one-click/SKILL.md", root));
 console.log("Plugin manifest passed.");
 
+
+await import("./validate-native-candidate.mjs");

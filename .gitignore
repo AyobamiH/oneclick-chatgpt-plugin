@@ -6,3 +6,5 @@ worker-configuration.d.ts
 npm-debug.log*
 
 artifacts/
+
+src/generated/

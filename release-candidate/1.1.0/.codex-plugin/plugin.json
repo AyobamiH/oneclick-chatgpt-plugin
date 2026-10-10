@@ -1,0 +1,36 @@
+{
+  "author": {
+    "name": "AYOBAMI JOHN HAASTRUP"
+  },
+  "description": "Prepare anonymous Basic website briefs or use an account-connected native Full Mode workspace for brand direction, style/layout choices, SEO/accessibility/security requirements, a five-sprint roadmap, saved projects, versioned knowledge, handoffs, editable SVG monogram kits and support. Try at no cost for three days: 72 hours, 25 trial support tickets, no card and no automatic charge. Afterwards, choose \u00a3100 once for lifetime Full Mode with its own 25 support tickets. External website creation/deployment and Agency services are separate.",
+  "interface": {
+    "capabilities": [],
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Prepare a complete website brief with brand direction, SEO requirements and a build roadmap.",
+      "Open my One Click workspace to review saved projects, knowledge bases and developer handoffs.",
+      "Show me the three-day Full Mode trial, its features and what continuing would cost."
+    ],
+    "developerName": "AYOBAMI JOHN HAASTRUP",
+    "displayName": "One Click",
+    "longDescription": "Prepare anonymous Basic website briefs or use an account-connected native Full Mode workspace for brand direction, style/layout choices, SEO/accessibility/security requirements, a five-sprint roadmap, saved projects, versioned knowledge, handoffs, editable SVG monogram kits and support. Try at no cost for three days: 72 hours, 25 trial support tickets, no card and no automatic charge. Afterwards, choose \u00a3100 once for lifetime Full Mode with its own 25 support tickets. External website creation/deployment and Agency services are separate.",
+    "privacyPolicyURL": "https://oneclickwebsitedesignfactory.com/chatgpt/privacy/",
+    "shortDescription": "Website briefs and Full Mode",
+    "supportURL": "https://oneclickwebsitedesignfactory.com/chatgpt/support/",
+    "termsOfServiceURL": "https://oneclickwebsitedesignfactory.com/chatgpt/terms/",
+    "websiteURL": "https://oneclickwebsitedesignfactory.com/chatgpt/",
+    "composerIcon": "./assets/logo.png",
+    "composerIconDark": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo.png"
+  },
+  "name": "app-698c5319a3c8819180537c0c37cde979",
+  "skills": "./skills",
+  "version": "1.1.0",
+  "mcpServers": "./.mcp.json",
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/build-with-one-click/SKILL.md"
+    }
+  }
+}
