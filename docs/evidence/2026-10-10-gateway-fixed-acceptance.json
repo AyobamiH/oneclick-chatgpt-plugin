@@ -1,7 +1,7 @@
 {
   "observed_at": "2026-10-10T00:36:55.068417+00:00",
   "source": "2db4938ce526e2a3d5b36d2fc598ed60c9805de9",
-  "worker_version": "45a8ae95-c602-4195-a5e6-45d97d64f83e",
+  "worker_version": "7f082def-3aed-4af4-be02-aae01c448ed8",
   "gateway_checks": [
     {
       "path": "/chatgpt/",
@@ -46,5 +46,7 @@
   ],
   "owned_domain_status": "blocked_existing_saas_apex_proxy",
   "publisher_links_changed": false,
-  "domain_guard": "activation_email_pending"
+  "domain_guard": "activation_email_pending",
+  "manual_deployment_version": "45a8ae95-c602-4195-a5e6-45d97d64f83e",
+  "deployment_source": "GitHub deployment run 38009388223; gateway deploy succeeded before owned-domain smoke failed"
 }
