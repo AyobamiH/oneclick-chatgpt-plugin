@@ -13,10 +13,14 @@ for (const field of ["displayName", "shortDescription"]) if (!manifest.interface
 if (!Array.isArray(manifest.interface.capabilities) || manifest.interface.capabilities.length > 20) throw new Error("Missing or oversized capabilities list");
 const prompts = [].concat(manifest.interface.defaultPrompt || []);
 if (prompts.length > 3 || prompts.some(prompt => typeof prompt !== "string" || prompt.length > 128 || prompt.includes("@"))) throw new Error("Starter prompts must fit the public package limits");
-// The current publisher-generated legacy release attaches its configured MCP
-// and icon outside the exported two-file package. Keep that existing app
-// identity and association rather than declaring a second MCP connection.
-if (manifest.mcpServers || manifest.apps) throw new Error("Keep the existing publisher-managed MCP association for this link-only update");
+// The publisher requires explicit retention of the existing remote MCP.
+if (manifest.apps || manifest.mcpServers !== "./.mcp.json") throw new Error("Retain the existing MCP declaration without app references");
+const mcp = JSON.parse(await readFile(new URL(".mcp.json", root), "utf8"));
+if (Object.keys(mcp.mcpServers || {}).join() !== "one-click" || mcp.mcpServers["one-click"].url !== "https://oneclick-chatgpt.woeinvests.workers.dev/mcp" || Object.keys(mcp.mcpServers["one-click"]).join() !== "url") throw new Error("Preserve the single existing unauthenticated MCP endpoint");
+for (const field of ["composerIcon", "composerIconDark", "logo", "logoDark"]) {
+  if (manifest.interface[field] !== "./assets/logo.png") throw new Error("Keep the repository icon in the complete package");
+}
+await access(new URL("assets/logo.png", root));
 await access(new URL("skills/build-with-one-click/SKILL.md", root));
 console.log("Plugin manifest passed.");
 
