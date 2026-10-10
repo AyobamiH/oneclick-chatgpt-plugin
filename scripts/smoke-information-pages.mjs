@@ -2,7 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const origin = "https://oneclickwebsitedesignfactory.com";
-const pages = [["/chatgpt/", "A clear website brief"], ["/chatgpt/privacy/", "Privacy policy"], ["/chatgpt/terms/", "Terms"], ["/chatgpt/support/", "Support"]];
+const pages = [["/chatgpt/", "A clear website brief"], ["/chatgpt/privacy/", "Privacy policy"], ["/chatgpt/terms/", "Terms"], ["/chatgpt/support/", "Contact One Click"]];
 const report = { check: "owned_domain_information_pages", status: "failed", observed_at: new Date().toISOString(), pages: [] };
 const require = (condition, code) => { if (!condition) throw new Error(code); };
 try {
