@@ -40,7 +40,7 @@ export async function serveInformationPage(request, fetchImpl = fetch) {
     // Fetch only fixed public files. Do not forward visitor queries, credentials,
     // cookies, referrers, request bodies or caller-selected origins/headers.
     const response = await fetchImpl(UPSTREAM + url.pathname, {
-      method: request.method, redirect: "error", headers: { accept: expectedType === "javascript" ? "text/javascript, application/javascript" : expectedType, "accept-encoding": "identity" },
+      method: request.method, redirect: "manual", headers: { accept: expectedType === "javascript" ? "text/javascript, application/javascript" : expectedType, "accept-encoding": "identity" },
       signal: AbortSignal.timeout(10000)
     });
     const type = (response.headers.get("content-type") || "").toLowerCase();

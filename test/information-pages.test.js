@@ -10,7 +10,7 @@ test("Public information requests cannot forward visitor data or select an upstr
   const response = await serveInformationPage(request, async (url, options) => {
     assert.equal(url, "https://oneclickwebsitedesignfactory.pages.dev/chatgpt/");
     assert.equal(options.method, "GET");
-    assert.equal(options.redirect, "error");
+    assert.equal(options.redirect, "manual");
     assert.deepEqual(options.headers, { accept: "text/html", "accept-encoding": "identity" });
     assert.equal("body" in options, false);
     assert.equal(options.signal instanceof AbortSignal, true);
@@ -119,4 +119,21 @@ test("The added fixed analytics configuration asset strips visitor data before f
   });
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("content-type"), "application/javascript");
+});
+
+
+test("HTML redirects are rejected after one fixed fetch without following their destination", async () => {
+  for (const status of [301, 302, 307, 308]) {
+    let calls = 0;
+    const response = await serveInformationPage(new Request("https://oneclickwebsitedesignfactory.com/chatgpt/"), async (url, options) => {
+      calls++;
+      assert.equal(url, "https://oneclickwebsitedesignfactory.pages.dev/chatgpt/");
+      assert.equal(options.redirect, "manual");
+      return new Response("private-provider-body", { status, headers: { location: "https://unapproved.example/", "content-type": "text/html" } });
+    });
+    assert.equal(calls, 1);
+    assert.equal(response.status, 503);
+    assert.equal(response.headers.has("location"), false);
+    assert.equal(await response.text(), "Information page temporarily unavailable");
+  }
 });
