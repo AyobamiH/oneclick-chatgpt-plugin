@@ -1,0 +1,10 @@
+# Integration defects found in the actual ChatGPT review
+The initial review pinned backend 49f67fa6e2683e661f6b9c028b5c16494c7060c1 and native plugin 11076fe8641ca229b3f699afb1892592d394a020. A personal review MCP plugin installed in the real ChatGPT host and rendered its anonymous workspace and a fictitious Basic brief. This is not acceptance of the complete publisher package or authenticated Full Mode.
+
+Actual host discovery requested advertised OpenID scopes that dynamic registration rejected. A hosted probe also showed refresh revocation left an existing bearer token usable. Fixes permit the advertised scopes while retaining S256 PKCE and add an application grant ledger bound to the current user, session, client and token fingerprints. Revocation, session removal and detected code/refresh replay fence bearer access. Previously issued tokens without a grant record must reconnect.
+
+Native write identifiers now survive uncertain responses and iframe reloads, the expired/previously-used trial state offers the existing optional continuation when enabled, branding has an explicit editable SVG download control, and backend authentication failures preserve the host OAuth challenge. Account recreation cannot display a fresh eligible trial.
+
+Validation on the changed source: 37 backend tests pass, including five new OAuth scope/revocation/replay cases; 57 native checks pass, including two new uncertain-response retry cases, source scan, bundle build and manifest validation. The unchanged website's prior 98-test result is retained rather than repeated.
+
+Migration 0012 is additive and required before enabling the new OAuth code. This draft still depends on migration PR #17; no production migration or feature flag is authorised by these checks. Full Mode production flags remain disabled and the published Basic 1.0.3 package remains unchanged. Hosted acceptance, authenticated ChatGPT, actual download, account/payment-return, migration and publisher gates must be evidenced separately. Review payments and customer signup/mail stay disabled. No customer charge has been made.
