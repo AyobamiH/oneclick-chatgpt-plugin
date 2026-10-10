@@ -18,9 +18,14 @@
     "shortDescription": "Prepare website build briefs",
     "supportURL": "https://oneclickwebsitedesignfactory.com/chatgpt/support/",
     "termsOfServiceURL": "https://oneclickwebsitedesignfactory.com/chatgpt/terms/",
-    "websiteURL": "https://oneclickwebsitedesignfactory.com/chatgpt/"
+    "websiteURL": "https://oneclickwebsitedesignfactory.com/chatgpt/",
+    "composerIcon": "./assets/logo.png",
+    "composerIconDark": "./assets/logo.png",
+    "logo": "./assets/logo.png",
+    "logoDark": "./assets/logo.png"
   },
   "name": "app-698c5319a3c8819180537c0c37cde979",
   "skills": "./skills",
-  "version": "1.0.3"
+  "version": "1.0.3",
+  "mcpServers": "./.mcp.json"
 }
