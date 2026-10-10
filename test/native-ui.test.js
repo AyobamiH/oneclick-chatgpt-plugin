@@ -36,3 +36,26 @@ test("real native SDK handshake delivers entrypoint context; trial requires cons
   await until(()=>!button("checkout").hidden);assert.equal(button("full-fields").hidden,true);assert.equal(calls.filter(c=>c.name==="oneclick_create_checkout").length,0);assert.equal(links.length,0);
  }catch(e){throw new Error(e.message+"; status="+dom.window.document.getElementById("status").textContent+"; errors="+JSON.stringify(errors)+"; messages="+JSON.stringify(outgoing));}finally{dom.window.close();}
 });
+
+test("chat-prepared Full briefs render through actual SDK notifications and Basic briefs never become savable Full projects",async()=>{
+ const calls=[],errors=[];let emit;
+ const draft={tier:"full",brief:{businessName:"Paws",businessType:"Grooming",location:"Bristol",primaryGoal:"Bookings",brandVibe:"Calm",preset:"minimalist",referenceUrl:"https://example.com/",services:["Grooming"]},projectInput:{business_name:"Paws"},lovable:{initial_message:"<script>window.untrusted=true</script>Full brief",project_knowledge:"Separate knowledge"}};
+ const virtualConsole=new VirtualConsole();virtualConsole.on("jsdomError",e=>errors.push(e.message));
+ const html=APP_HTML.replace("<!-- SERVICE_CONFIGURATION -->",'<script type="application/json" id="service-configuration">{"fullModeReady":true}</script>');
+ const dom=new JSDOM(html,{url:"https://view.example.invalid/",runScripts:"dangerously",pretendToBeVisual:true,virtualConsole,beforeParse(w){
+  w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;w.ResizeObserver=class{observe(){}disconnect(){}};
+  emit=data=>setTimeout(()=>w.dispatchEvent(new w.MessageEvent("message",{data,source:w})),0);
+  w.postMessage=data=>{
+   if(data.method==="ui/initialize")emit({jsonrpc:"2.0",id:data.id,result:{protocolVersion:data.params.protocolVersion,hostInfo:{name:"SDK prepared-draft fixture",version:"1"},hostCapabilities:{serverTools:{},openLinks:{},updateModelContext:{}},hostContext:{theme:"light",displayMode:"fullscreen"}}});
+   if(data.method==="ui/notifications/initialized")emit({jsonrpc:"2.0",method:"ui/notifications/tool-result",params:{content:[],structuredContent:draft}});
+   if(data.method==="tools/call"){calls.push(data.params);emit({jsonrpc:"2.0",id:data.id,result:{content:[],structuredContent:{state:"paid",fullMode:true,trialAvailable:false,ticketsRemaining:25}}});}
+  };
+ }});
+ try{
+  const document=dom.window.document,el=id=>document.getElementById(id);
+  await until(()=>!el("save-project").hidden&&!el("save-project").disabled);
+  assert.match(el("result").textContent,/<script>window.untrusted=true<\/script>Full brief/);assert.match(el("result").textContent,/Separate knowledge/);assert.equal(dom.window.untrusted,undefined);assert.equal(el("business-name").value,"Paws");assert.equal(el("preset").value,"minimalist");assert.equal(el("reference").value,"https://example.com/");assert.equal(el("trial-intro").hidden,true);assert.deepEqual(calls.map(c=>c.name),["oneclick_get_full_access"]);
+  emit({jsonrpc:"2.0",method:"ui/notifications/tool-result",params:{content:[],structuredContent:{tier:"basic",lovable:{initial_message:"Anonymous Basic brief"}}}});
+  await until(()=>el("result").textContent==="Anonymous Basic brief");assert.equal(el("save-project").hidden,true);assert.equal(el("reference").value,"");assert.equal(el("services").value,"");assert.equal(calls.length,1);assert.equal(errors.length,0);
+ }finally{dom.window.close();}
+});

@@ -18,7 +18,7 @@ Account OAuth uses PKCE, exact resource audience, short-lived tokens, explicit c
 
 ## Validation
 
-`npm run check`: 54 passing tests, including the real SDK UI handshake, service readiness, explicit trial consent, expiry refresh/payment prompt, no automatic checkout, isolated resources, Basic compatibility, OAuth challenges and backend-origin validation. Build generation uses replacement callbacks so bundled JavaScript cannot be corrupted by replacement-string metacharacters. Generated bundles are reproducible and ignored; run `npm run build:native` before deployment.
+`npm run check`: 55 passing tests, including the real SDK UI handshake, service readiness, explicit trial consent, expiry refresh/payment prompt, no automatic checkout, isolated resources, Basic compatibility, OAuth challenges and backend-origin validation. Build generation uses replacement callbacks so bundled JavaScript cannot be corrupted by replacement-string metacharacters. Generated bundles are reproducible and ignored; run `npm run build:native` before deployment.
 
 Reference: https://github.com/openai/mcp-extensions (source reviewed at 0d606217705e0e71eb21fff009619b67b80611dc). Current specification lists native extension support for ChatGPT Work; classic ChatGPT is not listed as supported. Do not promise universal paid-user coverage.
 
@@ -30,3 +30,9 @@ Reference: https://github.com/openai/mcp-extensions (source reviewed at 0d606217
 - Desktop/mobile captures are visual fixtures in docs/images; real SDK handshake and interactions are separately tested.
 
 The hosted receipt records an isolated synthetic account and new review database, no customer imports, disabled payments and unchanged production Basic 1.0.3. It does not claim real Checkout acceptance or public plugin publication. Trial expiry was simulated only in the synthetic database. No customer credentials are included in the repository.
+
+A separate prospective package in release-candidate/1.1.0 retains the publisher identity, canonical MCP URL, policy URLs and logo, while adding the Full Mode listing, task routing and onboarding. Its manifest/skill are validated by npm run check. It is not the currently submitted package. See NATIVE-FULL-MODE-LAUNCH-2026-10-10.md for the matching CTA, launch copy, metrics and promotion sequence.
+
+The real SDK tests also cover a chat-prepared Full brief arriving through native tool-result notifications: the UI displays the brief and knowledge safely, reads current account access, hides trial promotion for paid users, and never converts an anonymous Basic result into a savable Full project. Receiving another draft clears unrelated prior form values.
+
+Candidate onboarding was exercised on three simulated user scenarios by an independent agent: a newly installed trial-eligible user, expired access with payments unavailable, and a paid account asking for saves/support/reference input. It used workspace controls for app-only writes, preserved payment/expiry readiness, and excluded credentials. This is skill validation, not a live ChatGPT installation acceptance.
