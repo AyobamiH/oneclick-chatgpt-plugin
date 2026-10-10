@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "status": "verified",
+  "check": "production_privacy_settings",
+  "worker": "oneclick-plugin-pages",
+  "observed_at": "2026-10-10T00:36:58.277Z",
+  "settings_source": "script_settings_and_worker_metadata",
+  "checks": {
+    "observability_disabled": true,
+    "stored_logs_disabled": true,
+    "invocation_log_collection_disabled": true,
+    "tracing_disabled": true,
+    "issues_disabled": true,
+    "log_persistence_inactive": true,
+    "trace_persistence_inactive": true,
+    "no_export_destinations": true,
+    "logpush_disabled": true,
+    "no_tail_consumers": true,
+    "logs_configuration_present": true,
+    "traces_configuration_present": true,
+    "issues_configuration_present": false
+  },
+  "inactive_preferences": {
+    "logs_invocation_logs": true,
+    "logs_persist": true,
+    "traces_persist": true
+  }
+}

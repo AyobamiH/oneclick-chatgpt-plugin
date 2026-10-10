@@ -1,0 +1,50 @@
+{
+  "observed_at": "2026-10-10T00:36:55.068417+00:00",
+  "source": "2db4938ce526e2a3d5b36d2fc598ed60c9805de9",
+  "worker_version": "45a8ae95-c602-4195-a5e6-45d97d64f83e",
+  "gateway_checks": [
+    {
+      "path": "/chatgpt/",
+      "passed": true,
+      "bytes": 8561
+    },
+    {
+      "path": "/chatgpt/privacy/",
+      "passed": true,
+      "bytes": 16846
+    },
+    {
+      "path": "/chatgpt/terms/",
+      "passed": true,
+      "bytes": 3240
+    },
+    {
+      "path": "/chatgpt/support/",
+      "passed": true,
+      "bytes": 3693
+    },
+    {
+      "path": "/chatgpt/site.css",
+      "passed": true,
+      "bytes": 3881
+    },
+    {
+      "path": "/chatgpt/analytics.mjs",
+      "passed": true,
+      "bytes": 1101
+    },
+    {
+      "path": "/chatgpt/analytics-core.mjs",
+      "passed": true,
+      "bytes": 4542
+    },
+    {
+      "path": "/chatgpt/analytics-config.mjs",
+      "passed": true,
+      "bytes": 369
+    }
+  ],
+  "owned_domain_status": "blocked_existing_saas_apex_proxy",
+  "publisher_links_changed": false,
+  "domain_guard": "activation_email_pending"
+}
