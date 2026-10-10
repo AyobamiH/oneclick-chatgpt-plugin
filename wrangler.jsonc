@@ -3,11 +3,17 @@
   "name": "oneclick-chatgpt",
   "main": "./src/worker.js",
   "compatibility_date": "2026-08-27",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
   "workers_dev": true,
   "observability": {
     "enabled": false,
-    "logs": { "enabled": false, "invocation_logs": false }
+    "logs": {
+      "enabled": false,
+      "invocation_logs": false
+    }
   },
   "logpush": false,
   "vars": {
@@ -15,6 +21,9 @@
     "OPENAI_APPS_CHALLENGE": "bJOv4gQj_Xtt3yRg5qxnyPnyL3GNmIWTpJV5qNIq7hg"
   },
   "analytics_engine_datasets": [
-    { "binding": "ONECLICK_ANALYTICS", "dataset": "oneclick_usage" }
+    {
+      "binding": "ONECLICK_ANALYTICS",
+      "dataset": "oneclick_usage"
+    }
   ]
 }

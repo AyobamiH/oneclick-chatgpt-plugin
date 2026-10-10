@@ -1,0 +1,62 @@
+import {McpServer,createMcpHandler} from "@modelcontextprotocol/server";
+import {createMcpProtectedRequestHandler} from "@better-auth/mcp";
+import {z} from "zod";
+import {APP_HTML} from "./generated/native-ui.js";
+import {TOOLS,callTool} from "./tools.js";
+import {backendBase,backendRequest,prepareFull} from "./native-tools.js";
+import {record} from "./analytics.js";
+const UI="ui://oneclick/workspace-v1";
+const empty=z.strictObject({});
+const brief=z.strictObject({industry:z.string().trim().min(1).max(120),primary_goal:z.string().trim().min(1).max(240),business_name:z.string().max(100).optional(),brand_vibe:z.string().max(160).optional(),headline:z.string().max(180).optional(),call_to_action:z.string().max(80).optional(),layout:z.enum(["simple-linear","corporate-grid","creative-story","premium-luxury","local-service","modern-editorial","bento-grid","split-screen","immersive-fullscreen","card-modular","timeline-journey"]).optional(),services:z.array(z.string().trim().min(1).max(120)).max(12).optional()});
+const fullBrief=brief.extend({preset:z.enum(["minimalist","flat-design","material-design","brutalism","skeuomorphism","neumorphism","retro-vintage","gothic-dark","maximalism"]).optional(),reference_url:z.string().url().max(2048).refine(v=>{const u=new URL(v);return u.protocol==="https:"&&!u.username&&!u.password&&!u.port;}).optional(),primary_goal:z.string().trim().min(1).max(200),business_name:z.string().trim().min(1).max(100),brand_vibe:z.string().trim().min(1).max(160),location:z.string().trim().min(1).max(200),target_audience:z.string().max(240).optional(),extra_notes:z.string().max(2000).optional(),image_urls:z.array(z.string().url().max(2048).refine(v=>{const u=new URL(v);return u.protocol==="https:"&&!u.username&&!u.password&&!u.port;})).max(10).optional()});
+const key=z.string().regex(/^[A-Za-z0-9_-]{16,80}$/);
+const annotation=(write=false)=>({readOnlyHint:!write,destructiveHint:false,openWorldHint:false});
+const meta=(visibility=["model","app"],entrypoint)=>({ui:{resourceUri:UI,visibility},...(entrypoint?{"openai/ui":{entrypoints:[{type:entrypoint}]}}:{})});
+const oauthMeta={securitySchemes:[{type:"oauth2",scopes:["oneclick:full"]}]};
+export const FULL_TOOLS=new Set(["oneclick_get_full_access","oneclick_start_full_trial","oneclick_prepare_full_draft","oneclick_list_projects","oneclick_save_project","oneclick_list_support_tickets","oneclick_create_support_ticket","oneclick_create_checkout","oneclick_get_knowledge_base","oneclick_save_knowledge_base","oneclick_get_handoff","oneclick_create_brand_kit"]);
+const result=(data,message="One Click completed the requested operation.")=>({structuredContent:Array.isArray(data)?{items:data}:data,content:[{type:"text",text:message}]});
+const publicMessages={authentication_required:"Connect your One Click account to continue.",full_access_required:"Start an available trial or choose paid access to use Full Mode.",request_conflict:"This request conflicts with an earlier action. Refresh your account and try again.",too_many_requests:"Too many requests. Please try again shortly.",service_unavailable:"One Click could not complete the request. Please try again."};
+async function safe(fn){try{return result(await fn());}catch(e){const message=publicMessages[e.message]??publicMessages.service_unavailable;return {isError:true,structuredContent:{status:"blocked",message},content:[{type:"text",text:message}]};}}
+export function createNativeHandler(request,env,ctx){
+ return createMcpHandler(()=>{
+  const server=new McpServer({name:"one-click",version:"1.1.0"},{instructions:"Prepare website briefs with task-specific inputs only. Full Mode uses the existing One Click account and requires current paid or trial access. Starting a 3-day trial requires the user's explicit confirmation of its duration and optional £100 one-time continuation. Review the brief before any save or external project creation. Never send passwords, tokens, unrelated conversation history or private customer records as tool arguments."});
+  server.registerResource("oneclick-workspace",UI,{title:"One Click website workspace",mimeType:"text/html;profile=mcp-app",_meta:{ui:{csp:{connectDomains:[],resourceDomains:[]}},"openai/ui":{preferredDisplayMode:"fullscreen",availableDisplayModes:["fullscreen","inline"]}}},async uri=>({contents:[{uri:uri.href,mimeType:"text/html;profile=mcp-app",text:APP_HTML.replace("<!-- SERVICE_CONFIGURATION -->",()=>'<script type="application/json" id="service-configuration">'+JSON.stringify({fullModeReady:env.ONECLICK_FULL_MODE_READY==="true",reviewMode:env.ONECLICK_REVIEW_MODE==="true"})+'</script>'),_meta:{ui:{csp:{connectDomains:[],resourceDomains:[]}},"openai/ui":{preferredDisplayMode:"fullscreen",availableDisplayModes:["fullscreen","inline"]}}}]}));
+  for(const [name,title,entrypoint] of [["oneclick_open_workspace","One Click","global"],["oneclick_open_brief_review","Website brief review","thread"]])server.registerTool(name,{title,description:"Open the One Click website brief builder and review workspace.",inputSchema:empty,annotations:annotation(),_meta:meta(["app"],entrypoint)},()=>{record(env,ctx,request,{tool:name,outcome:"success",status:200,latencyMs:0});return result({workspace:true,fullModeReady:env.ONECLICK_FULL_MODE_READY==="true"},"One Click opened the website workspace.");});
+  server.registerTool(TOOLS[0].name,{...TOOLS[0],outputSchema:undefined,inputSchema:brief,_meta:meta()},async args=>{const start=Date.now();const r=await callTool(TOOLS[0].name,args);record(env,ctx,request,{tool:TOOLS[0].name,outcome:"success",status:200,latencyMs:Date.now()-start});return r;});
+  if(env.ONECLICK_FULL_MODE_READY==="true") {
+   const register=(name,title,description,input,fn,write=false,appOnly=false)=>server.registerTool(name,{title,description,inputSchema:input,annotations:{...annotation(write),openWorldHint:name==="oneclick_create_checkout"},_meta:{...meta(appOnly?["app"]:["model","app"]),...oauthMeta},securitySchemes:oauthMeta.securitySchemes},async args=>{const start=Date.now();const r=await safe(()=>fn(args));record(env,ctx,request,{tool:name,outcome:r.isError?"error":"success",status:200,latencyMs:Date.now()-start});return r;});
+   register("oneclick_get_full_access","Check One Click Full Mode access","Read current trial or paid access and the exact optional continuation price for your existing One Click account.",empty,()=>backendRequest(request,env,"/full-access"));
+   register("oneclick_start_full_trial","Start confirmed 3-day Full Mode trial","Start one 72-hour trial for the connected verified account only after the user confirms the duration and optional £100 one-time continuation. No card or automatic charge.",z.strictObject({accept_trial_terms:z.literal(true),policy_version:z.literal("oneclick.full-trial.v1")}),a=>backendRequest(request,env,"/full-access/trial",{method:"POST",body:{acceptTrialTerms:a.accept_trial_terms,policyVersion:a.policy_version}}),true,true);
+   register("oneclick_prepare_full_draft","Prepare Full Mode website brief","Prepare the full website handoff, identity/layout direction, SEO/accessibility/security requirements, knowledge base and five-sprint roadmap for the connected account with active trial or paid access. Does not save or deploy.",fullBrief,a=>prepareFull(request,env,a));
+   register("oneclick_list_projects","List your saved website projects","Read only the connected One Click account's saved projects.",empty,()=>backendRequest(request,env,"/projects"));
+   const project=z.strictObject({business_name:z.string().max(200),business_type:z.string().max(200),location:z.string().max(200),primary_goal:z.string().max(200),brand_vibe:z.string().max(200),extra_notes:z.string().max(10000).optional(),build_insights:z.string().max(20000).optional(),generated_prompt:z.string().max(100000),lovable_url:z.literal("https://lovable.dev/"),generation_mode:z.literal("full"),image_urls:z.array(z.string().url()).max(20)});
+   register("oneclick_save_project","Save reviewed website project","Save the exact reviewed Full Mode brief to the connected account. Requires explicit user instruction; does not create an external builder project.",z.strictObject({project,request_key:key}),a=>backendRequest(request,env,"/projects",{method:"POST",body:a.project,key:a.request_key}),true,true);
+   const id=z.string().regex(/^[A-Za-z0-9_-]{1,80}$/);
+   register("oneclick_get_knowledge_base","Read your project knowledge base","Read the connected account's versioned project knowledge base with current Full Mode access.",z.strictObject({project_id:id}),a=>backendRequest(request,env,"/projects/"+a.project_id+"/knowledge-base"));
+   register("oneclick_save_knowledge_base","Save reviewed project knowledge base","Save a reviewed project knowledge base without overwriting newer versions. Requires the user's explicit instruction.",z.strictObject({project_id:id,id:z.string().uuid(),content:z.string().trim().min(1).max(100000),expected_version:z.number().int().min(0)}),a=>backendRequest(request,env,"/projects/"+a.project_id+"/knowledge-base",{method:"POST",body:{id:a.id,content:a.content,expected_version:a.expected_version}}),true,true);
+   register("oneclick_get_handoff","Read developer handoff pack","Read the connected account's escaped developer handoff document with current Full Mode access.",z.strictObject({project_id:id}),a=>backendRequest(request,env,"/projects/"+a.project_id+"/handoff"));
+   register("oneclick_create_brand_kit","Create an editable brand kit","Create and save a deterministic SVG monogram, palette, typography and usage guidelines for the user's saved project. This is an editable starting identity, not a bespoke designer commission.",z.strictObject({project_id:id,id:z.string().uuid(),palette:z.enum(["calm","bright","premium"])}),a=>backendRequest(request,env,"/projects/"+a.project_id+"/branding",{method:"POST",body:{id:a.id,palette:a.palette}}),true,true);
+   register("oneclick_list_support_tickets","Read your developer support tickets","Read only the connected account's developer support requests.",empty,()=>backendRequest(request,env,"/tickets"));
+   register("oneclick_create_support_ticket","Submit a developer support request","Submit the user's support request and spend one ticket from the current paid or active trial balance.",z.strictObject({subject:z.string().trim().min(1).max(200),description:z.string().trim().min(1).max(10000),request_key:key}),a=>backendRequest(request,env,"/tickets",{method:"POST",body:{subject:a.subject,description:a.description},key:a.request_key}),true,true);
+   register("oneclick_create_checkout","Open optional lifetime access checkout","Prepare the existing £100 one-time lifetime Full Mode checkout for the connected account after they choose to pay. Payment requires a separate confirmation on Stripe.",z.strictObject({request_key:key}),a=>backendRequest(request,env,"/checkout",{method:"POST",body:{product:"retainer"},key:a.request_key}),true,true);
+  }
+  return server;
+ },{legacy:"serve"});
+}
+export async function nativeMcp(request,env,ctx){
+ if(request.method==="POST"){
+  const max=524288;
+  if(Number(request.headers.get("content-length"))>max)return Response.json({error:"body_too_large"},{status:413});
+  const reader=request.body?.getReader(),chunks=[];let size=0;
+  if(reader)for(;;){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>max){await reader.cancel();return Response.json({error:"body_too_large"},{status:413});}chunks.push(value);}
+  const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+  request=new Request(request,{body:bytes});
+ }
+ const handler=createNativeHandler(request,env,ctx);
+ let payload;try{payload=await request.clone().json();}catch{return handler.fetch(request);}
+ if(payload?.method==="tools/call"&&FULL_TOOLS.has(payload.params?.name)&&env.ONECLICK_FULL_MODE_READY==="true"){
+  const base=backendBase(env);
+  return createMcpProtectedRequestHandler({issuer:base+"/api/auth",audience:new URL(request.url).origin+"/mcp",jwksUrl:base+"/api/auth/jwks",requiredScopes:["oneclick:full"]},req=>handler.fetch(req))(request);
+ }
+ return handler.fetch(request);
+}
