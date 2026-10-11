@@ -29,3 +29,21 @@ followed by a retry without starting or charging during the denial.
 No app permission settings, production services or Basic 1.0.3 were changed.
 Full integration acceptance, migration PR #17, payment-return and publisher
 release gates remain outstanding.
+
+## Preset persistence contract defect
+
+Actual native save and subsequent authenticated ChatGPT project listing showed
+the reviewed Minimalist/Bento brief persisted, but its dedicated preset field
+was null. The native prepared project and private save schema omitted optional
+backend fields. They now preserve the reviewed preset and optional HTTPS
+reference as preset and input_url, using the same validation as the draft.
+The proxy test covers the registered tool's schema and forwarded JSON; unknown
+presets do not reach the backend. Existing saved projects are not silently
+rewritten. A native save of a new project after this patch still requires
+revision-matched host acceptance.
+
+The native controller became unable to resume its credential-protected page
+after the SVG download observer failed. The actual connected ChatGPT plugin's
+read tools remain available and returned the persisted project and knowledge.
+SVG generation and storage passed, but actual download delivery, support writes
+and uncertain-write retries remain unproven in this host journey.

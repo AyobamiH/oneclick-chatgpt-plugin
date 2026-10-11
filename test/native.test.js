@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {fetchHandler} from "../src/worker.js";
 import {backendBase,backendRequest,prepareFull} from "../src/native-tools.js";
 import {APP_HTML} from "../src/generated/native-ui.js";
+import {createNativeHandler} from "../src/native.js";
 async function call(method,params={},extra={}){
  const response=await fetchHandler(new Request("https://oneclick-chatgpt-native-review.woeinvests.workers.dev/mcp",{method:"POST",headers:{"content-type":"application/json",accept:"application/json, text/event-stream"},body:JSON.stringify({jsonrpc:"2.0",id:1,method,params})}),{ONECLICK_NATIVE_ENABLED:"true",...extra},{waitUntil(){}});
  const raw=await response.text();let body;try{body=JSON.parse(raw);}catch{const data=raw.split("\n").find(l=>l.startsWith("data: "));body=data?JSON.parse(data.slice(6)):raw;}
@@ -46,7 +47,7 @@ test("account requests never follow redirects or forward tokens to a redirected 
 
 test("Full handoff carries paid styling and reference inputs without fetching reference websites",async()=>{
  const original=globalThis.fetch;const calls=[];globalThis.fetch=async(url)=>{calls.push(String(url));return Response.json({fullMode:true,state:"trial_active",trial:{}});};
- try{const output=await prepareFull(new Request("https://mcp.example.invalid/mcp",{headers:{authorization:"Bearer fixture-token"}}),{ONECLICK_BACKEND_URL:"https://oneclick-trial-review.woeinvests.workers.dev"},{business_name:"Owner business",industry:"Pet care",location:"London",primary_goal:"Appointments",brand_vibe:"Calm",preset:"minimalist",reference_url:"https://reference.example.invalid/",headline:"Care for your pet",call_to_action:"Book now"});assert.equal(output.brief.preset,"minimalist");assert.equal(output.brief.referenceUrl,"https://reference.example.invalid/");assert.match(output.lovable.initial_message,/not fetched or inspected/);assert.match(output.lovable.project_knowledge,/Style preset: minimalist/);assert.equal(calls.length,1);assert.ok(calls[0].endsWith("/api/plugin/full-access"));}finally{globalThis.fetch=original;}
+ try{const output=await prepareFull(new Request("https://mcp.example.invalid/mcp",{headers:{authorization:"Bearer fixture-token"}}),{ONECLICK_BACKEND_URL:"https://oneclick-trial-review.woeinvests.workers.dev"},{business_name:"Owner business",industry:"Pet care",location:"London",primary_goal:"Appointments",brand_vibe:"Calm",preset:"minimalist",reference_url:"https://reference.example.invalid/",headline:"Care for your pet",call_to_action:"Book now"});assert.equal(output.brief.preset,"minimalist");assert.equal(output.brief.referenceUrl,"https://reference.example.invalid/");assert.equal(output.projectInput.preset,"minimalist");assert.equal(output.projectInput.input_url,"https://reference.example.invalid/");assert.match(output.lovable.initial_message,/not fetched or inspected/);assert.match(output.lovable.project_knowledge,/Style preset: minimalist/);assert.equal(calls.length,1);assert.ok(calls[0].endsWith("/api/plugin/full-access"));}finally{globalThis.fetch=original;}
 });
 
 
@@ -64,4 +65,18 @@ test("private write helpers update the existing workspace without advertising wi
   assert.equal(opener._meta.ui.resourceUri,"ui://oneclick/workspace-v1");
   assert.equal(opener.annotations.readOnlyHint,true);
  }
+});
+
+
+test("registered project save forwards reviewed preset and reference and rejects unknown presets",async()=>{
+ const original=globalThis.fetch,calls=[];
+ globalThis.fetch=async(url,options)=>{calls.push({url,body:JSON.parse(options.body),key:options.headers["Idempotency-Key"]});return Response.json({id:"saved-fixture"});};
+ const project={business_name:"Fixture studio",business_type:"Design",location:"London",primary_goal:"Bookings",brand_vibe:"Calm",generated_prompt:"Reviewed fixture brief",lovable_url:"https://lovable.dev/",generation_mode:"full",image_urls:[],preset:"minimalist",input_url:"https://reference.example.invalid/"};
+ const requestFor=p=>new Request("https://native.example.invalid/mcp",{method:"POST",headers:{"content-type":"application/json",accept:"application/json, text/event-stream",authorization:"Bearer fixture-token"},body:JSON.stringify({jsonrpc:"2.0",id:1,method:"tools/call",params:{name:"oneclick_save_project",arguments:{project:p,request_key:"native_contract_review_20261011"}}})});
+ try{
+  const req=requestFor(project),env={ONECLICK_FULL_MODE_READY:"true",ONECLICK_BACKEND_URL:"https://oneclick-trial-review.woeinvests.workers.dev"};
+  const good=await createNativeHandler(req,env,{waitUntil(){}}).fetch(req);const raw=await good.text();const body=JSON.parse(raw.startsWith("{")?raw:raw.split("\n").find(l=>l.startsWith("data: ")).slice(6));
+  assert.equal(body.result.structuredContent.id,"saved-fixture");assert.equal(calls.length,1);assert.equal(calls[0].body.preset,"minimalist");assert.equal(calls[0].body.input_url,"https://reference.example.invalid/");
+  const bad=requestFor({...project,preset:"unrecognised"});await createNativeHandler(bad,env,{waitUntil(){}}).fetch(bad);assert.equal(calls.length,1);
+ }finally{globalThis.fetch=original;}
 });
