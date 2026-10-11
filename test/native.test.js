@@ -48,3 +48,20 @@ test("Full handoff carries paid styling and reference inputs without fetching re
  const original=globalThis.fetch;const calls=[];globalThis.fetch=async(url)=>{calls.push(String(url));return Response.json({fullMode:true,state:"trial_active",trial:{}});};
  try{const output=await prepareFull(new Request("https://mcp.example.invalid/mcp",{headers:{authorization:"Bearer fixture-token"}}),{ONECLICK_BACKEND_URL:"https://oneclick-trial-review.woeinvests.workers.dev"},{business_name:"Owner business",industry:"Pet care",location:"London",primary_goal:"Appointments",brand_vibe:"Calm",preset:"minimalist",reference_url:"https://reference.example.invalid/",headline:"Care for your pet",call_to_action:"Book now"});assert.equal(output.brief.preset,"minimalist");assert.equal(output.brief.referenceUrl,"https://reference.example.invalid/");assert.match(output.lovable.initial_message,/not fetched or inspected/);assert.match(output.lovable.project_knowledge,/Style preset: minimalist/);assert.equal(calls.length,1);assert.ok(calls[0].endsWith("/api/plugin/full-access"));}finally{globalThis.fetch=original;}
 });
+
+
+test("private write helpers update the existing workspace without advertising widgets",async()=>{
+ const list=await call("tools/list",{},{ONECLICK_FULL_MODE_READY:"true",ONECLICK_BACKEND_URL:"https://oneclick-trial-review.woeinvests.workers.dev"});
+ const helpers=list.body.result.tools.filter(t=>t.annotations?.readOnlyHint===false&&t._meta?.ui?.visibility?.length===1&&t._meta.ui.visibility[0]==="app");
+ assert.equal(helpers.length,6);
+ for(const tool of helpers){
+  assert.deepEqual(tool._meta.ui.visibility,["app"]);
+  assert.equal(tool._meta.ui.resourceUri,undefined);
+  assert.deepEqual(tool._meta.securitySchemes,[{type:"oauth2",scopes:["oneclick:full"]}]);
+ }
+ for(const name of ["oneclick_open_workspace","oneclick_open_brief_review"]){
+  const opener=list.body.result.tools.find(t=>t.name===name);
+  assert.equal(opener._meta.ui.resourceUri,"ui://oneclick/workspace-v1");
+  assert.equal(opener.annotations.readOnlyHint,true);
+ }
+});

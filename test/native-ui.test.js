@@ -6,7 +6,7 @@ import {webcrypto} from "node:crypto";
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(check){for(let i=0;i<200;i++){if(check())return;await delay(10);}throw Error("Native workspace did not reach the expected state");}
 test("real native SDK handshake delivers entrypoint context; trial requires consent and never charges automatically",async()=>{
- const calls=[],links=[],errors=[],outgoing=[];let access={state:"trial_eligible",fullMode:false,trialAvailable:true,ticketsRemaining:0,offer:{continuation:{available:true}}};
+ const calls=[],links=[],errors=[],outgoing=[];let denyFirstTrial=true;let access={state:"trial_eligible",fullMode:false,trialAvailable:true,ticketsRemaining:0,offer:{continuation:{available:true}}};
  const virtualConsole=new VirtualConsole();virtualConsole.on("jsdomError",e=>errors.push(e.message));
  const dom=new JSDOM(APP_HTML,{url:"https://view.example.invalid/",runScripts:"dangerously",pretendToBeVisual:true,virtualConsole,beforeParse(w){
   const setTimer=w.setTimeout.bind(w);w.setTimeout=(fn,ms,...args)=>setTimer(fn,ms>86400000?150:ms,...args);
@@ -18,6 +18,7 @@ test("real native SDK handshake delivers entrypoint context; trial requires cons
    if(data.method==="tools/call"){
     calls.push(data.params);const name=data.params.name;
     if(name==="oneclick_get_full_access"&&access.state==="trial_active")access={...access,state:"trial_expired",fullMode:false,ticketsRemaining:0};
+    if(name==="oneclick_start_full_trial"&&denyFirstTrial){denyFirstTrial=false;emit({jsonrpc:"2.0",id:data.id,result:{isError:true,content:[{type:"text",text:"Host denied the requested write."}]}});return;}
     if(name==="oneclick_start_full_trial")access={...access,state:"trial_active",fullMode:true,trialAvailable:false,ticketsRemaining:25,trial:{expiresAt:new Date(Date.now()+259200000).toISOString()}};
     emit({jsonrpc:"2.0",id:data.id,result:{content:[],structuredContent:access}});
    }
@@ -31,7 +32,9 @@ test("real native SDK handshake delivers entrypoint context; trial requires cons
   button("connect").click();await until(()=>!button("trial-consent").hidden&&!button("start-trial").disabled);
   assert.equal(calls[0].name,"oneclick_get_full_access");assert.equal(calls.filter(c=>c.name==="oneclick_start_full_trial").length,0);
   button("start-trial").click();await until(()=>button("status").textContent.includes("confirm the trial duration"));assert.equal(calls.filter(c=>c.name==="oneclick_start_full_trial").length,0);
-  button("accept-trial").checked=true;button("start-trial").click();await until(()=>!button("full-fields").hidden&&!button("prepare").disabled);
+  button("accept-trial").checked=true;button("start-trial").click();await until(()=>button("status").textContent==="Host denied the requested write."&&!button("start-trial").disabled);
+  assert.equal(access.state,"trial_eligible");assert.equal(button("full-fields").hidden,true);assert.equal(calls.filter(c=>c.name==="oneclick_create_checkout").length,0);
+  button("start-trial").click();await until(()=>!button("full-fields").hidden&&!button("prepare").disabled);
   const activation=calls.find(c=>c.name==="oneclick_start_full_trial");assert.deepEqual({...activation.arguments},{accept_trial_terms:true,policy_version:"oneclick.full-trial.v1"});assert.equal(calls.filter(c=>c.name==="oneclick_create_checkout").length,0);assert.equal(links.length,0);assert.equal(errors.length,0);assert.equal(button("checkout").hidden,true);
   await until(()=>!button("checkout").hidden);assert.equal(button("full-fields").hidden,true);assert.equal(calls.filter(c=>c.name==="oneclick_create_checkout").length,0);assert.equal(links.length,0);
  }catch(e){throw new Error(e.message+"; status="+dom.window.document.getElementById("status").textContent+"; errors="+JSON.stringify(errors)+"; messages="+JSON.stringify(outgoing));}finally{dom.window.close();}
