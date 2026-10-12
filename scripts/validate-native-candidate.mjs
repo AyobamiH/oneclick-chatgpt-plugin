@@ -9,7 +9,10 @@ for(const field of ["displayName","developerName","websiteURL","privacyPolicyURL
 assert.ok(next.interface.shortDescription.length<=30);
 assert.ok(next.interface.defaultPrompt.length<=3&&next.interface.defaultPrompt.every(p=>typeof p==="string"&&p.length<=128&&!p.includes("@")));
 assert.equal(next.extensions["com.openai"].onboardingSkill,"./skills/build-with-one-click/SKILL.md");
-assert.deepEqual(JSON.parse(await readFile(new URL(".mcp.json",candidate),"utf8")),JSON.parse(await readFile(new URL(".mcp.json",root),"utf8")));
+const urls=JSON.parse(await readFile(new URL("deployment/production-urls.json",root),"utf8"));
+const basicMcp=JSON.parse(await readFile(new URL(".mcp.json",root),"utf8"));
+assert.equal(basicMcp.mcpServers["one-click"].url,urls.legacyMcpUrl);
+assert.deepEqual(JSON.parse(await readFile(new URL(".mcp.json",candidate),"utf8")),{mcpServers:{"one-click":{url:urls.mcpUrl}}});
 assert.deepEqual(await readFile(new URL("assets/logo.png",candidate)),await readFile(new URL("assets/logo.png",root)));
 await access(new URL(next.extensions["com.openai"].onboardingSkill,candidate));
 const skill=await readFile(new URL(next.extensions["com.openai"].onboardingSkill,candidate),"utf8");
