@@ -257,7 +257,7 @@ function generateIdentityBlock(output: Omit<IdentityLayerOutput, 'rawIdentityBlo
 
 ### Industry Context
 - **Industry:** ${output.industryPack.name}
-- **Trust Markers to Include:** ${output.trustMarkers.join(', ')}
+- **Evidence topics (verify owner-supplied facts before inclusion; omit if unavailable):** ${output.trustMarkers.join(', ')}
 - **Key Vocabulary:** ${output.vocabularyTerms.slice(0, 4).join(', ')}
 
 ### Visual Direction

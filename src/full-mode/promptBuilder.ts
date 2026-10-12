@@ -1,6 +1,6 @@
 /**
  * Prompt Builder Engine
- * Deterministic builder that assembles the final prompt for Lovable Build-with-URL
+ * Deterministic website handoff builder; optional external-builder export is separate
  * Enhanced with Identity Layer integration for Full Mode
  */
 
@@ -142,7 +142,7 @@ ${identityOutput ? `- Secondary CTA: "${identityOutput.secondaryCta}"` : ''}
 - Add a contact section with clear contact information
 - Ensure mobile-first responsive design
 
-### Accessibility (WCAG AA Compliance)
+### Accessibility Requirements To Implement And Test
 - All images must have descriptive alt text
 - Proper heading hierarchy (H1 → H2 → H3)
 - Sufficient color contrast ratios (minimum 4.5:1 for normal text)
@@ -167,9 +167,9 @@ ${identityOutput ? `- Color Tendency: ${identityOutput.colorTendency}` : `- Colo
 - Brand personality reflecting: ${brandVibe}
 - Clear typography hierarchy
 - Ample whitespace for readability
-${identityOutput ? `\n**Trust Markers to Include:**\n${identityOutput.trustMarkers.map(t => `- ${t}`).join('\n')}` : ''}
+${identityOutput ? `\n**Evidence topics (include only owner-supplied, verified facts; otherwise omit):**\n${identityOutput.trustMarkers.map(t => `- ${t}`).join('\n')}` : ''}
 - Benefit-driven copy focusing on customer needs
-- Trust signals and social proof where appropriate
+- Include social proof only when supplied with permission and verified; omit unsupported claims
 - Strong call-to-action buttons
 - Contact information easily accessible
 
@@ -181,11 +181,11 @@ ${extraNotes ? `\n### Additional Notes\n${extraNotes}\n` : ''}
 - Include JSON-LD LocalBusiness schema with business name, type, and location
 - Add meta title and description optimized for "${businessType} in ${location}"
 - Implement Open Graph tags for social sharing
-- Ensure fast Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
+- Ensure fast Core Web Vitals (LCP < 2.5s, INP <= 200ms, CLS < 0.1)
 - Use semantic HTML5 with proper heading hierarchy
 - Add descriptive alt text for all images
 
-#### Accessibility Enforcement (WCAG 2.1 AA)
+#### Accessibility Verification Targets (WCAG 2.1 AA)
 - Ensure keyboard navigation works throughout
 - Maintain color contrast ratios of at least 4.5:1
 - Add ARIA labels and landmarks where appropriate
@@ -203,7 +203,7 @@ ${extraNotes ? `\n### Additional Notes\n${extraNotes}\n` : ''}
 #### Production Polish
 - Professional, agency-quality design
 - Industry-specific component structure
-- Placeholder testimonials section
+- Omit testimonials unless genuine, permissioned reviews have been supplied
 - Clear service/offering presentations
 - Strong brand personality throughout
 - Optimized for conversion and user engagement
@@ -231,9 +231,9 @@ Implement the following compliance features to help meet basic legal and regulat
   - Business name: ${businessName}
   - Business type: ${businessType}
   - Location: ${location}
-  - Placeholder for registration number (if applicable)
-  - Placeholder for VAT number (if applicable in ${location})
-  - Contact email and phone placeholders
+  - Publish only owner-approved contact and business details
+  - Keep missing registration, tax and contact facts in the private handoff checklist; never render invented numbers or public placeholders
+  - Never publish a private tax reference or an unapproved home address
 
 **4. Online Safety Standards:**
 - Implement secure form handling with HTTPS
@@ -251,12 +251,10 @@ Implement the following compliance features to help meet basic legal and regulat
 - Add clear content attribution where third-party content is used
 
 **6. Marketing Email & Direct Messaging Rules:**
-- For any newsletter signup or contact forms:
-  - Include explicit consent checkbox for marketing communications
-  - Add unsubscribe instructions near signup
-  - Include "We respect your privacy" message
-  - Link to Email Preferences or Communication Preferences page template
-- Add text: "By submitting this form, you agree to receive communications from ${businessName}. You can unsubscribe at any time."
+- Keep service enquiries separate from optional marketing subscriptions
+- If marketing signup is offered, use a separate unchecked opt-in and unsubscribe instructions
+- Never require marketing consent to submit an enquiry or obtain the requested service
+- Link the relevant privacy information beside the form
 
 **Note:** These templates and scaffolding provide a starting point for legal compliance. Users should review and customize these sections with their legal advisor to ensure full compliance with applicable laws in ${location}.
 
@@ -302,13 +300,13 @@ This Knowledge Base should serve as the source of truth for all future developme
 
 #### Next 5 Production Sprints Roadmap
 1. **Sprint 1: UI/UX Enhancement** - Refine animations, micro-interactions, and visual hierarchy
-2. **Sprint 2: Content & Copy** - Add real testimonials, detailed service descriptions, case studies
+2. **Sprint 2: Content & Copy** - Add supplied, verified and permissioned testimonials or case studies only; otherwise omit them
 3. **Sprint 3: Performance Optimization** - Image optimization, lazy loading, caching strategies
 4. **Sprint 4: Advanced Features** - Contact forms, booking systems, live chat integration
 5. **Sprint 5: Launch Preparation** - Final testing, analytics setup, monitoring, and deployment
 
 ## Deliverable
-A production-ready, fully-featured website draft that is accessible, SEO-optimized, secure, and professionally polished, aligned with the business goals and brand identity outlined above.`;
+An editable website draft aligned with the supplied business facts. Accessibility, security, SEO and performance requirements must be implemented and tested before release; this handoff is not evidence of completed compliance.`;
 
   return prompt;
 }

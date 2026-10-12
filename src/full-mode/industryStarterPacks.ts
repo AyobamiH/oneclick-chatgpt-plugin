@@ -715,7 +715,7 @@ export function getIndustryPackByType(businessType: string): IndustryStarterPack
     // Tradesperson
     'plumber': 'tradesperson', 'electrician': 'tradesperson', 'handyman': 'tradesperson', 'roofing': 'tradesperson', 'hvac': 'tradesperson',
     // Designer
-    'graphic': 'designer', 'web design': 'designer', 'brand': 'designer', 'ux': 'designer', 'ui': 'designer',
+    'graphic': 'designer', 'website design': 'designer', 'web design': 'designer', 'brand': 'designer', 'ux': 'designer', 'ui': 'designer',
     // Healthcare
     'doctor': 'healthcare', 'medical': 'healthcare', 'therapy': 'healthcare', 'dental': 'healthcare', 'physio': 'healthcare', 'clinic': 'healthcare',
     // E-commerce
@@ -765,7 +765,10 @@ export function getIndustryPackByType(businessType: string): IndustryStarterPack
   };
 
   for (const [keyword, packId] of Object.entries(keywordMap)) {
-    if (normalizedType.includes(keyword)) {
+    // Match word starts; short abbreviations must occupy a whole word.
+    // Otherwise 'it' in 'website' and 'ui' in 'building' select unrelated packs.
+    const pattern = new RegExp('(?:^|[^a-z0-9])' + keyword + (keyword.length <= 3 ? '(?:$|[^a-z0-9])' : ''));
+    if (pattern.test(normalizedType)) {
       const pack = INDUSTRY_STARTER_PACKS.find(p => p.id === packId);
       if (pack) return pack;
     }

@@ -39,7 +39,7 @@ export function generateBuildInsights(data: BusinessFormData): BuildInsights {
       "Semantic HTML5 structure with proper heading hierarchy",
       "Alt text describing each actual image; empty alt for decorative images",
       "Internal linking between service pages and contact",
-      "Fast Core Web Vitals: LCP < 2.5s, INP < 200ms, CLS < 0.1"
+      "Fast Core Web Vitals: LCP < 2.5s, INP <= 200ms, CLS < 0.1"
     ],
 
     accessibilityChecklist: [
