@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-11T22:09:36.795168+00:00",
+  "scope": "canonical production preparation and existing Basic alias; Full release held",
+  "backend_parent": "32286a80dd8afb698c5bb6c65d203887cba2cfd3",
+  "native_parent": "40963a9bf80b27d21150701a700d3c51272dbcc6",
+  "canonical_mcp_url": "https://mcp.oneclickwebsitedesignfactory.com/mcp",
+  "basic_runtime_version": "c13a4f7e-cb63-4c9a-8cda-893a95af6cad",
+  "basic_http_and_mcp_smoke": true,
+  "native_flags_changed": false,
+  "web_cutover_performed": false,
+  "migration_performed": false,
+  "customer_charged": false,
+  "backend_tests": 39,
+  "production_gateway_contract_tests": 8,
+  "native_checks": 60,
+  "cloudflare_frontend_build": true,
+  "generated_service_worker_routing": true,
+  "actual_full_host_acceptance_after_this_patch": false,
+  "publisher_mcp_url_migration": "support-assisted change required"
+}

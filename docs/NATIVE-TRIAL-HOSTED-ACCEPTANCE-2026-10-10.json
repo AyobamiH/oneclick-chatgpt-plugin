@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-10T02:37:21.629142+00:00",
+  "native_worker": "oneclick-chatgpt-native-review",
+  "account_worker": "oneclick-trial-review",
+  "customer_imports": 0,
+  "synthetic_accounts_only": true,
+  "payments_enabled": false,
+  "real_checkout_tested_in_this_review": false,
+  "production_changed": false,
+  "checks": [
+    "review pages",
+    "customer signup disabled",
+    "verified account and honest offer readiness",
+    "hosted OAuth PKCE and explicit connection consent",
+    "native OAuth challenge and cross-worker bearer verification",
+    "72-hour activation and replay-safe trial balance",
+    "Full prompt, knowledge draft, images, layout and build insights",
+    "saved project, versioned knowledge, branding and handoff",
+    "support retries spend one trial ticket",
+    "expiry blocks Full work and support while preserving saved projects",
+    "published Basic production endpoint unchanged"
+  ],
+  "all_passed": true,
+  "final_deployment_verification": {
+    "checked_at": "2026-10-10T03:05:54.064585+00:00",
+    "all_passed": true,
+    "checks": [
+      "final candidate health",
+      "verified expired-account read after final deploy",
+      "Full operations remain blocked after expiry",
+      "anonymous native Basic still works",
+      "final UI resource includes paid controls and clear trial terms",
+      "both entrypoints and Full tool schemas available",
+      "unauthenticated Full requests challenge OAuth",
+      "hosted request size bound",
+      "customer signup remains disabled",
+      "production remains Basic 1.0.3",
+      "served native UI matches the checked local bundle byte for byte",
+      "final candidate policy served",
+      "fresh OAuth consent and resource token after UI update",
+      "expiry remains enforced and production unchanged after UI update"
+    ],
+    "backend_version_id": "de557191-444a-4873-8ba9-193efd231f2c",
+    "native_version_id": "26b03bfd-c7db-4679-976b-605a22766b7e",
+    "production_changed": false,
+    "payments_enabled": false,
+    "native_ui_sha256": "eea5177976cfe89785256351cde62a4bfd4d4ee09b755895a067f809bc52b3a2"
+  },
+  "validation": {
+    "plugin_tests_passed": 55,
+    "backend_tests_passed": 32,
+    "website_tests_passed": 98,
+    "candidate_manifest_validated": true,
+    "candidate_skill_frontmatter_validated": true,
+    "actual_chatgpt_installation_tested": false
+  }
+}

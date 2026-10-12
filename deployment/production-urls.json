@@ -1,0 +1,21 @@
+{
+  "schema": "oneclick.production-urls.v1",
+  "siteOrigin": "https://oneclickwebsitedesignfactory.com",
+  "wwwOrigin": "https://www.oneclickwebsitedesignfactory.com",
+  "mcpOrigin": "https://mcp.oneclickwebsitedesignfactory.com",
+  "mcpUrl": "https://mcp.oneclickwebsitedesignfactory.com/mcp",
+  "authIssuer": "https://oneclickwebsitedesignfactory.com/api/auth",
+  "signInUrl": "https://oneclickwebsitedesignfactory.com/auth",
+  "consentUrl": "https://oneclickwebsitedesignfactory.com/chatgpt/connect",
+  "googleCallbackUrl": "https://oneclickwebsitedesignfactory.com/api/auth/callback/google",
+  "paymentSuccessUrl": "https://oneclickwebsitedesignfactory.com/payment-success",
+  "paymentCancelUrl": "https://oneclickwebsitedesignfactory.com/upgrade",
+  "stripeWebhookUrl": "https://oneclickwebsitedesignfactory.com/api/stripe/webhook",
+  "websiteWorkspaceUrl": "https://oneclickwebsitedesignfactory.com/dashboard",
+  "pluginInformationUrl": "https://oneclickwebsitedesignfactory.com/chatgpt/",
+  "pluginPrivacyUrl": "https://oneclickwebsitedesignfactory.com/chatgpt/privacy/",
+  "pluginTermsUrl": "https://oneclickwebsitedesignfactory.com/chatgpt/terms/",
+  "pluginSupportUrl": "https://oneclickwebsitedesignfactory.com/chatgpt/support/",
+  "legacyMcpUrl": "https://oneclick-chatgpt.woeinvests.workers.dev/mcp",
+  "legacyMcpPurpose": "Compatibility for the existing published Basic plugin; retire only after OpenAI-assisted URL migration and acceptance."
+}

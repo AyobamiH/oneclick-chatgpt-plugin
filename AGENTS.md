@@ -1,9 +1,13 @@
-# One Click ChatGPT Plugin
+# One Click ChatGPT plugin — current agent rules
 
-- This repository is the independent ChatGPT/Codex plugin for One Click.
-- Do not modify or copy secrets from `oneclickwebdesignfactory`.
-- Keep Basic Mode anonymous and ephemeral.
-- Keep saved projects and Full Mode behind the existing One Click user identity.
-- The One Click MCP prepares a structured handoff. ChatGPT invokes the separately installed Lovable plugin.
-- Run `npm run check` before every push and smoke-test `/health`, `/mcp`, `/privacy`, `/terms`, and `/support` after deployment.
+- This repository owns the independent native ChatGPT plugin and published Basic compatibility. Do not copy secrets or user data from the website/backend repository.
+- As of 12 October 2026, Full Mode changes belong to draft PR #13 (`feat/native-full-trial-20261010`). Treat its current remote head and checks, not the stale local `oneclick-native-trial-20261010` checkout, as authoritative.
+- The existing published Basic 1.0.3 MCP URL must be retained while the publisher migration is unaccepted. The new Full Mode candidate uses `https://mcp.oneclickwebsitedesignfactory.com/mcp`.
+- Keep anonymous Basic Mode ephemeral. Only verified OneClick accounts may use Full Mode, saved projects, knowledge, branding or support. Never replace account identity with chat identity.
+- One Click prepares its own structured, developer-ready handoff. An optional separately authorised external builder is not a prerequisite for One Click's Full Mode or the independent website/backend; do not treat Lovable as a required infrastructure dependency.
+- The account trial is one explicit 72-hour activation with 25 trial tickets and no card or automatic charge. Any £100 one-time continuation must be user-selected and verified by backend receipts; review payments remain disabled.
+- OAuth sign-in uses the account backend's signed consent, PKCE and resource-bound token flow. The isolated review backend advertises `openid email profile offline_access oneclick:full` as of 12 October, but the ChatGPT host screenshot still shows `invalid_scope: openid`. One obsolete zero-consent, zero-token review registration has been corrected in D1; the other client with prior consent and refresh history was not modified. Verify which issuer/client the connected app actually uses and complete the real host roundtrip before declaring the incident closed; do not ask for credentials or repeat a broad scope migration.
+- Run `npm run check` before every push and smoke-test `/health`, `/mcp`, `/privacy`, `/terms`, `/support` after deployment. Actual native host save, SVG download, support debits/retries, knowledge conflict, revocation/reconnect, installation and publisher approval remain release gates.
+- Production domain settings, the published Basic package, live Stripe, customer migration and the apex website are not to be changed by review testing or obsolete-code cleanup. Remove only proved-dead code, with a regression test and clear migration path.
 
+Obsolete Supabase-era native modules `src/auth.js` and `src/supabase.js` were retired after import-graph verification. Do not restore Supabase authentication or the obsolete protected-resource metadata; the active Full Mode identity and resource audience belong to the independent OneClick backend and are checked in `test/legacyModules.test.js`.

@@ -63,9 +63,15 @@ async function mcp(request, env, ctx) {
 export async function fetchHandler(request, env = {}, ctx = {}) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/oneclick-chatgpt-plugin(?=\/|$)/, "") || "/";
-  if (path === "/mcp") return mcp(request, env, ctx);
+  if (path === "/mcp") {
+    if(env.ONECLICK_NATIVE_ENABLED==="true") {const {nativeMcp}=await import("./native.js");return nativeMcp(request,env,ctx);}
+    return mcp(request, env, ctx);
+  }
+  if(["/.well-known/oauth-protected-resource","/.well-known/oauth-protected-resource/mcp"].includes(path) && env.ONECLICK_NATIVE_ENABLED==="true" && env.ONECLICK_FULL_MODE_READY==="true") {const {backendBase}=await import("./native-tools.js");return json({resource:url.origin+"/mcp",authorization_servers:[backendBase(env)+"/api/auth"],scopes_supported:["oneclick:full"],bearer_methods_supported:["header"],resource_documentation:url.origin+"/support"});}
+  if (path === "/health" && env.ONECLICK_NATIVE_ENABLED==="true") return json({status:"ok",service:SERVER.name,version:"1.1.0-candidate",nativeUI:true,fullModeReady:env.ONECLICK_FULL_MODE_READY==="true",mode:env.ONECLICK_FULL_MODE_READY==="true"?"basic_and_account_full":"anonymous_basic"});
   if (path === "/health") return json({ status: "ok", service: SERVER.name, version: VERSION, tools: TOOLS.length, mode: "anonymous_basic", analytics: env.ONECLICK_ANALYTICS ? "configured" : "not_configured" });
   if (path === "/.well-known/openai-apps-challenge") return env.OPENAI_APPS_CHALLENGE ? new Response(env.OPENAI_APPS_CHALLENGE, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } }) : new Response("Not configured", { status: 404 });
+  if(env.ONECLICK_FULL_MODE_READY==="true" && ["/","/index.html","/privacy","/terms"].includes(path)){const pages=await import("./full-pages.js");return html(path==="/privacy"?pages.fullPrivacy():path==="/terms"?pages.fullTerms():pages.fullLanding());}
   if (path === "/privacy") return html(privacy());
   if (path === "/terms") return html(terms());
   if (path === "/support") return html(support());

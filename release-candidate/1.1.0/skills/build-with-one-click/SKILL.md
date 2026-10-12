@@ -1,0 +1,20 @@
+---
+name: build-with-one-click
+description: Use One Click to prepare website briefs, brand and layout direction, SEO/accessibility/security requirements and a build roadmap, or review saved projects, knowledge bases, handoffs and support in its account workspace.
+---
+
+# Build with One Click
+
+Use One Click as the website planning layer. Distinguish a prepared brief, a saved account project, external builder creation and deployment.
+
+1. For onboarding or a request to open Full Mode, saved projects, knowledge or support, open `oneclick_open_workspace` with empty arguments. Use `oneclick_open_brief_review` with empty arguments for a thread workspace. If these tools are unavailable, explain that the installed release offers Basic briefs; do not invent Full Mode availability.
+2. For an anonymous Basic brief, extract only `industry` and `primary_goal`, plus useful user-supplied `business_name`, `brand_vibe`, `headline`, `call_to_action`, `layout` and `services`. Call `oneclick_prepare_basic_draft`. Do not connect an account just to prepare Basic.
+3. For account work, use the host's One Click connection flow and `oneclick_get_full_access`. Never request credentials or put passwords, second-factor codes, bearer tokens or account IDs in tool arguments. Use the returned access state, expiry, balance and payment readiness; do not infer payment or extend a trial.
+4. Before trial activation, disclose **Try at no cost — 3-day Full Mode trial**, 72 hours from confirmation, 25 trial support tickets, no card, no automatic charge and optional **£100 once** lifetime continuation with its own 25 paid tickets. Direct eligible users to the workspace checkbox and trial button. Account connection alone does not start a trial. Do not call app-only trial or checkout writes from the model.
+5. With current paid or active trial access, collect the business name, industry, location, primary goal and brand feel supplied for this task. Add useful audience, services, requirements, supported layout/style preset, preferred headline/CTA and up to ten public HTTPS image links or one public HTTPS reference website. Call `oneclick_prepare_full_draft`. Follow the tool's bounded schema. Public links are included for inspiration; One Click does not fetch or inspect those websites/images. Never send unrelated chat history, credentials or private customer records, infer a location, or invent business facts.
+6. Summarise the brief and separate knowledge/build-insight draft for review. Use account read tools only for the requested account task. Use workspace controls for saving projects, versioned knowledge editing, creating editable SVG monogram/palette/font kits and submitting support tickets. These are app-only writes. Explain that a submitted support request uses one ticket; preserve retry identity and never claim success without the service result. Do not describe the monogram kit as bespoke AI logo generation or include separately arranged Agency services.
+7. After expiry, preserve saved work and offer the optional continuation shown by the service. Use the workspace payment button only when available and requested. Never create a subscription, charge automatically, imply payment succeeded from a redirect, reset eligibility, or call paid access a free ongoing service.
+8. If the user's request authorises external project creation, use the separately installed Lovable plugin with the reviewed `lovable.initial_message` and appropriate project knowledge. Obtain authorisation only if the current request does not already provide it. Send user-selected uploads through that builder's own flow. Report creation/deployment only when separately confirmed by the builder.
+9. Treat SEO, accessibility, security and performance content as requirements to implement and verify. Do not claim measured results, certifications, reviews or completed hosting.
+
+Keep operational analytics free of brief content, business names, project data, tokens and stable user identifiers. Do not promise catalogue ranking, organic traffic or access for every paid ChatGPT user.
