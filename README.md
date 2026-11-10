@@ -47,3 +47,7 @@ The full public policy and private support route remain available from this Work
 ## Owned-domain information pages: 1.0.3 candidate
 
 The candidate manifest points to the dedicated [plugin introduction](https://oneclickwebsitedesignfactory.com/chatgpt/), [privacy](https://oneclickwebsitedesignfactory.com/chatgpt/privacy/), [terms](https://oneclickwebsitedesignfactory.com/chatgpt/terms/) and [support](https://oneclickwebsitedesignfactory.com/chatgpt/support/) pages. These are separate from the main website's original legal and account routes. The MCP endpoint and tool contract are unchanged. See [the release handoff](docs/owned-domain-release-1.0.3.md) for verification and the separate publisher-review step.
+
+## Agent development
+
+Start with [AGENTS.md](AGENTS.md) for repository-owned skills, project knowledge and validation guidance.
